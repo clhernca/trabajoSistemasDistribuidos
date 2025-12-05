@@ -71,17 +71,65 @@ public class ManejadorCliente implements Runnable {
 
             case "BID":
                 System.out.println("[" + nombreUsuario + "] Pidió hacer una puja");
-                // manejarPuja(mensaje);
+                manejarPuja(mensaje);
                 break;
 
             case "INFO":
                 System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
-                // manejarInfo(mensaje);
+                manejarInfo(mensaje);
                 break;
 
             default:
                 out.println("ERROR:Comando desconocido: " + comando);
         }
+    }
+
+    private void manejarPuja(Mensaje mensaje) {
+        int idSubasta = mensaje.getParametroInt(0);
+        double cantidad = mensaje.getParametroDouble(1);
+
+        if (idSubasta == -1 || cantidad == -1.0) {          // Por qué -1? Porque getParametroInt y getParametroDouble devuelven -1 en caso de error
+            out.println("BID_ERROR:Parámetros inválidos");
+            return;
+        }
+
+        Subasta subasta = gestor.buscarSubasta(idSubasta);
+
+        if (subasta == null) {
+            out.println("BID_ERROR:Subasta no encontrada");
+            return;
+        }
+
+        if (!subasta.estaActiva()) {
+            out.println("BID_ERROR:Subasta cerrada");
+            return;
+        }
+
+        boolean exitosa = gestor.procesarPuja(idSubasta, nombreUsuario, cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual
+
+        if (exitosa) {
+            System.out.println("[" + nombreUsuario + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
+            out.println("BID_OK:" + idSubasta + ":" + String.format("%.2f", cantidad));
+        } else {
+            out.println("BID_ERROR:Cantidad debe ser > €" +
+                    String.format("%.2f", subasta.getPrecioActual()));
+        }
+    }
+
+    private void manejarInfo(Mensaje mensaje) {
+
+        int idSubasta = mensaje.getParametroInt(0);
+
+        System.out.println("[" + nombreUsuario + "] Pidió INFO de subasta #" + idSubasta);
+
+        Subasta subasta = gestor.buscarSubasta(idSubasta);
+
+        if (subasta == null) {
+            out.println("ERROR:Subasta no encontrada");
+            return;
+        }
+
+        out.println("INFO:" + subasta.toString());
     }
 
     private void manejarListar() {
@@ -108,51 +156,6 @@ public class ManejadorCliente implements Runnable {
 }
 
 /*
- 
- * 
- * private void manejarVer(Mensaje mensaje) {
- * int idSubasta = mensaje.getParametroInt(0);
- * Subasta subasta = gestor.buscarSubasta(idSubasta);
- * 
- * if (subasta == null) {
- * out.println("ERROR:Subasta no encontrada");
- * return;
- * }
- * 
- * out.println("VER:" + subasta.toString());
- * }
- * 
- * private void manejarPuja(Mensaje mensaje) {
- * int idSubasta = mensaje.getParametroInt(0);
- * double cantidad = mensaje.getParametroDouble(1);
- * 
- * if (idSubasta == -1 || cantidad == -1.0) {
- * out.println("ERROR:Parámetros inválidos");
- * return;
- * }
- * 
- * Subasta subasta = gestor.buscarSubasta(idSubasta);
- * if (subasta == null) {
- * out.println("ERROR:Subasta no encontrada");
- * return;
- * }
- * 
- * if (!subasta.estaActiva()) {
- * out.println("ERROR:Subasta cerrada");
- * return;
- * }
- * 
- * boolean exitosa = gestor.procesarPuja(idSubasta, nombreUsuario, cantidad);
- * 
- * if (exitosa) {
- * System.out.println("[" + nombreUsuario + "] Pujo €" + cantidad +
- * " en subasta #" + idSubasta);
- * out.println("PUJA_OK:" + idSubasta + ":" + String.format("%.2f", cantidad));
- * } else {
- * out.println("PUJA_ERROR:La cantidad debe ser mayor al precio actual (€" +
- * String.format("%.2f", subasta.getPrecioActual()) + ")");
- * }
- * }
  * 
  * private void cerrarConexion() {
  * try {
