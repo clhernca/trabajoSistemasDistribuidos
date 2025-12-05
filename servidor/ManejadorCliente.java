@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.List;
 
 import compartido.Mensaje;
+import compartido.Subasta;
 
 public class ManejadorCliente implements Runnable {
 
@@ -60,54 +62,54 @@ public class ManejadorCliente implements Runnable {
     }
 
     private void procesarComando(Mensaje mensaje) {
-       String comando = mensaje.getComando();
+        String comando = mensaje.getComando();
 
         switch (comando) {
             case "LIST":
                 System.out.println("[" + nombreUsuario + "] Pidió listar subastas");
-                //manejarListar();
+                manejarListar();
                 break;
 
             case "BID":
                 System.out.println("[" + nombreUsuario + "] Pidió hacer una puja");
-                //manejarPuja(mensaje);
+                // manejarPuja(mensaje);
                 break;
 
             case "INFO":
                 System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
-                //manejarInfo(mensaje);
+                // manejarInfo(mensaje);
                 break;
 
             default:
                 out.println("ERROR:Comando desconocido: " + comando);
         }
     }
+
+    private void manejarListar() {
+        System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
+        List<Subasta> subastas = gestor.obtenerSubastas();
+
+        if (subastas.isEmpty()) {
+            out.println("LISTA_VACIA");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder("LISTA:");
+        for (Subasta s : subastas) {
+            sb.append(s.getId()).append("|")
+                    .append(s.getTitulo()).append("|")
+                    .append(String.format("%.2f", s.getPrecioActual())).append("|")
+                    .append(s.getPujadorLider()).append("|")
+                    .append(s.getTiempoRestante()).append(";");
+        }
+
+        out.println(sb.toString()); // LISTA:id|titulo|precioActual|pujadorLider|tiempo;id|titulo|precioActual|pujadorLider|tiempo;...
+
+    }
 }
 
 /*
- * 
- * 
- * 
- * private void manejarListar() {
- * System.out.println("[" + nombreUsuario + "] Pidió listar subastas");
- * List<Subasta> subastas = gestor.obtenerSubastas();
- * 
- * if (subastas.isEmpty()) {
- * out.println("LISTA_VACIA");
- * return;
- * }
- * 
- * StringBuilder sb = new StringBuilder("LISTA:");
- * for (Subasta s : subastas) {
- * sb.append(s.getId()).append("|")
- * .append(s.getTitulo()).append("|")
- * .append(String.format("%.2f", s.getPrecioActual())).append("|")
- * .append(s.getPujadorLider()).append("|")
- * .append(s.getTiempoRestante()).append(";");
- * }
- * 
- * out.println(sb.toString());
- * }
+ 
  * 
  * private void manejarVer(Mensaje mensaje) {
  * int idSubasta = mensaje.getParametroInt(0);
