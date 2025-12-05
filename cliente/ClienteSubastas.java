@@ -1,6 +1,7 @@
 package cliente;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -49,11 +50,22 @@ public class ClienteSubastas {
         //Guardo contraseña en atributo? No se va a volver a usar, no?
         out.println("LOGIN:" + nombreUsuario + ":" + scanner.nextLine());
 
-        //String respuesta = in.readLine();
-        //Leo respuesta
-        //if (respuesta...) como sea el formato
-        return true; //o false, habrá que verlo
-        //Me podrías pasar aquí el saldo
+        String respuesta;
+        try {
+            respuesta = in.readLine();
+            if (respuesta.equals("LOGIN_OK")){
+                System.out.println("ME HE LOGEADO BIENN");
+            return true; 
+        }
+        else{
+            return false;
+        }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+        
     }
     private static void mostrarMenu(){
         System.out.println("======= MENÚ =======");

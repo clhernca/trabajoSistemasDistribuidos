@@ -1,14 +1,13 @@
 package servidor;
 
+import compartido.Mensaje;
+import compartido.Subasta;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
-
-import compartido.Mensaje;
-import compartido.Subasta;
 
 public class ManejadorCliente implements Runnable {
 
@@ -30,7 +29,7 @@ public class ManejadorCliente implements Runnable {
             // Crear streams de entrada/salida
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-
+/*
             // Pedir nombre de usuario
             out.println("NOMBRE_REQUERIDO");
             nombreUsuario = in.readLine();
@@ -41,6 +40,24 @@ public class ManejadorCliente implements Runnable {
 
             System.out.println("[SERVIDOR] Se conectó: " + nombreUsuario);
             out.println("BIENVENIDA:" + nombreUsuario);
+*/
+
+            //El cliente al principio manda LOGIN:USER:CONTRASEÑA
+            //Se lee ese mensaje y se hace una función de check LOGIN
+            //Se devuelve un mensaje de cómo ha ido el login
+
+            String mensajeLogin = in.readLine();
+            String [] splitLogin = mensajeLogin.split(":");
+
+            if (manejarLogin(splitLogin[1], splitLogin[2])){
+                out.println("LOGIN_OK");
+                //Se podría mandar el mensaje con la infor del usuario (saldo...)
+                nombreUsuario = splitLogin[1];
+            }
+            else {
+                out.println("LOGIN_ERROR");
+                //Si da error, qué hacemos? No se debería de seguir con el código
+            }
 
             String linea;
             while ((linea = in.readLine()) != null) {
@@ -48,7 +65,7 @@ public class ManejadorCliente implements Runnable {
 
                 if (mensaje == null) {
                     out.println("ERROR:Mensaje inválido");
-                    continue;
+                    continue; //Qué hace esto?
                 }
 
                 procesarComando(mensaje);
@@ -59,6 +76,10 @@ public class ManejadorCliente implements Runnable {
         } finally {
             // cerrarConexion();
         }
+    }
+
+    private boolean manejarLogin(String usuario, String contrasena){
+        return true; //ver si en verdad está y devolver otra cosa si no
     }
 
     private void procesarComando(Mensaje mensaje) {
