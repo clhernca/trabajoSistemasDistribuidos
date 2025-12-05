@@ -66,7 +66,6 @@ public class ManejadorCliente implements Runnable {
 
         switch (comando) {
             case "LIST":
-                System.out.println("[" + nombreUsuario + "] Pidió listar subastas");
                 manejarListar();
                 break;
 
@@ -86,7 +85,7 @@ public class ManejadorCliente implements Runnable {
     }
 
     private void manejarListar() {
-        System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
+        System.out.println("[" + nombreUsuario + "] Pidió listar subastas");
         List<Subasta> subastas = gestor.obtenerSubastas();
 
         if (subastas.isEmpty()) {
