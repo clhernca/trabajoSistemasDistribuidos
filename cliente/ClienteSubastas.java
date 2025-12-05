@@ -17,13 +17,10 @@ public class ClienteSubastas {
     private Scanner scanner;
     private String nombreUsuario;
 
-    public ClienteSubastas() {
-        this.scanner = new Scanner(System.in);
-    }
+    
 
     public static void main(String[] args) {
         try {
-            ClienteSubastas cliente = new ClienteSubastas();
 
             socket = new Socket(HOST, PUERTO);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
