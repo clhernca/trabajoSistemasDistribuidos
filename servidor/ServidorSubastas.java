@@ -1,17 +1,16 @@
 package servidor;
 
+import compartido.Subasta;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import compartido.Subasta;
-
 public class ServidorSubastas {
 
     private static final int PUERTO = 5000;
-    private static final int NUM_HILOS = 10;
+    private static final int NUM_HILOS = 10; //POR QUÉ FIXED??
 
     private ServerSocket servidor;
     private ExecutorService pool;
@@ -35,9 +34,9 @@ public class ServidorSubastas {
     }
 
     private void iniciar() {
-        inicializarSubastas();
-        
 
+        inicializarSubastas();
+        inicializarUsuarios();
         System.out.println("SERVIDOR DE SUBASTAS INICIADO");
 
         /*
@@ -62,7 +61,7 @@ public class ServidorSubastas {
                 System.out.println("Nuevo cliente conectado desde: " + cliente.getInetAddress());
 
                 // Asignar cliente a un hilo del pool
-                pool.execute(new ManejadorCliente(cliente, gestor));
+                pool.execute(new ManejadorCliente(cliente, gestorSubastas, gestorUsuarios));
 
             } catch (IOException e) {
                 System.err.println("Error al aceptar cliente: " + e.getMessage());
@@ -72,13 +71,19 @@ public class ServidorSubastas {
     }
 
     private void inicializarSubastas() {
-        gestor.agregarSubasta(new Subasta(1, "Laptop Dell XPS", 150.00));
-        gestor.agregarSubasta(new Subasta(2, "iPhone 15 Pro", 200.00));
-        gestor.agregarSubasta(new Subasta(3, "PlayStation 5", 300.00));
-        gestor.agregarSubasta(new Subasta(4, "AirPods Pro", 75.00));
-        gestor.agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
+        gestorSubastas.agregarSubasta(new Subasta(1, "Laptop Dell XPS", 150.00));
+        gestorSubastas.agregarSubasta(new Subasta(2, "iPhone 15 Pro", 200.00));
+        gestorSubastas.agregarSubasta(new Subasta(3, "PlayStation 5", 300.00));
+        gestorSubastas.agregarSubasta(new Subasta(4, "AirPods Pro", 75.00));
+        gestorSubastas.agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
 
         System.out.println("[SERVIDOR] Se crearon 5 subastas de prueba");
+    }
+
+    private void inicializarUsuarios(){
+        gestorUsuarios.crearUsuario("pepe", "pass123", 500.00);
+        gestorUsuarios.crearUsuario("luisa", "pass456", 400.00);
+        gestorUsuarios.crearUsuario("juan", "pass789", 600.00);
     }
 
 }

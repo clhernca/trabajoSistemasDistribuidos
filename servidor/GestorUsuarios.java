@@ -15,12 +15,25 @@ public class GestorUsuarios {
         public void crearUsuario(String nombre, String contraseña, double saldoInicial) {
         if (!usuarios.containsKey(nombre)) {
             usuarios.put(nombre, new Usuario(nombre, contraseña, saldoInicial));
+            System.out.println("EN EL PUT CON " + nombre+contraseña+saldoInicial);
         }
     }
 
+    public synchronized boolean registrar(String nombre, String contrasena) {
+        if (obtenerUsuario(nombre) != null) {
+            return false;
+        }
+        
+        Usuario nuevoUsuario = new Usuario(nombre, contrasena, 1000.0);
+        agregarUsuario(nuevoUsuario);
+        
+        // Guardar en el XML???????????
+        
+        return true;
+    }
+
     public Usuario login(String nombre, String contraseña) { 
-        //METER AQUÍ COMPROBACIÓN DE SI EL
-        //USUARIO YA EXISTE (método existeUsuario)?
+        System.out.println("FUNCION LOGIN DE GESTOR: PARAMETROS: " + nombre + contraseña);
         Usuario usuario = usuarios.get(nombre);
         if (usuario != null && usuario.getContraseña().equals(contraseña)) {
             return usuario;
@@ -42,13 +55,6 @@ public class GestorUsuarios {
 
     public Collection<Usuario> obtenerTodosUsuarios() {
         return usuarios.values();
-    }
-
-    public void inicializarUsuariosDemo() {
-        crearUsuario("pepe", "pass123", 500.00);
-        crearUsuario("luisa", "pass456", 400.00);
-        crearUsuario("juan", "pass789", 600.00);
-        System.out.println("[SERVIDOR] Se crearon 3 usuarios de prueba");
     }
 }
 

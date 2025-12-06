@@ -1,7 +1,6 @@
 package servidor;
 
-import compartido.Mensaje;
-import compartido.Subasta;
+import compartido.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,15 +11,17 @@ import java.util.List;
 public class ManejadorCliente implements Runnable {
 
     private Socket socket;
-    private GestorSubastas gestor;
-    private String nombreUsuario;
+    private GestorSubastas gestorSubastas;
+    private GestorUsuarios gestorUsuarios;
+    private Usuario usuarioActual;
     private BufferedReader in;
     private PrintWriter out;
     private boolean conexion;
 
-    public ManejadorCliente(Socket socket, GestorSubastas gestor) {
+    public ManejadorCliente(Socket socket, GestorSubastas gestorSubastas, GestorUsuarios gestorUsuarios) {
         this.socket = socket;
-        this.gestor = gestor;
+        this.gestorSubastas = gestorSubastas;
+        this.gestorUsuarios = gestorUsuarios;
     }
 
     @Override
@@ -31,46 +32,45 @@ public class ManejadorCliente implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
-            String lineaLogin = in.readLine();
-            Mensaje mensajeLogin = Mensaje.parsear(lineaLogin);
+            boolean autenticado = false;
 
-            if (mensajeLogin == null || !mensajeLogin.getComando().equals("LOGIN")) {
-                out.println("LOGIN_ERROR:Formato de login inválido");
-                socket.close();
+            while (!autenticado) {
+            String lineaAut = in.readLine();
+            Mensaje mensajeAut = Mensaje.parsear(lineaAut);
+
+            if (mensajeAut == null) {
+                out.println("ERROR:Formato inválido");
                 return;
             }
 
+            String comando = mensajeAut.getComando();
 
-            if (manejarLogin(mensajeLogin.getParametro(0), mensajeLogin.getParametro(1))){
+            if (comando.equals("LOGIN")) {
+            if (manejarLogin(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
                 out.println("LOGIN_OK");
-                conexion = true;
+                autenticado = true;
+            } else {
+                out.println("LOGIN_ERROR:Usuario o contraseña incorrectos");
             }
-            else {
-                out.println("LOGIN_ERROR");
-                socket.close();
-                return;
+            
+        } else if (comando.equals("REGISTER")) {
+            if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
+                // Registro exitoso, automáticamente lo logueamos
+                //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
+                usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0), 
+                                                      mensajeAut.getParametro(1));
+                out.println("REGISTER_OK");
+                autenticado = true;
+            } else {
+                out.println("REGISTER_ERROR:El usuario ya existe");
             }
+            
+        } else {
+            out.println("ERROR:Se esperaba LOGIN o REGISTER");
+        }
+    }
 
-            //El cliente al principio manda LOGIN:USER:CONTRASEÑA
-            //Se lee ese mensaje y se hace una función de check LOGIN
-            //Se devuelve un mensaje de cómo ha ido el login
-/*
-
-
-
-            String mensajeLogin = in.readLine();
-            String [] splitLogin = mensajeLogin.split(":");
-
-            if (manejarLogin(splitLogin[1], splitLogin[2])){
-                out.println("LOGIN_OK");
-                //Se podría mandar el mensaje con la infor del usuario (saldo...)
-                nombreUsuario = splitLogin[1];
-            }
-            else {
-                out.println("LOGIN_ERROR");
-                //Si da error, qué hacemos? No se debería de seguir con el código
-            } */
-
+            conexion = true;
             String linea;
             while (conexion) {
                 linea = in.readLine();
@@ -85,15 +85,30 @@ public class ManejadorCliente implements Runnable {
             }
 
         } catch (IOException e) {
-            System.err.println("[ERROR] Desconexión de: " + nombreUsuario);
+            System.err.println("[ERROR] Desconexión de: " + usuarioActual.getNombre());
         } finally {
             // cerrarConexion();
         }
     }
 
+private boolean manejarRegistro(String usuario, String contrasena) {
+
+    boolean registrado = gestorUsuarios.registrar(usuario, contrasena);
+    
+    if (registrado) {
+        System.out.println("[SERVIDOR] Nuevo usuario registrado: " + usuario);
+    }
+    
+    return registrado;
+}
+
     private boolean manejarLogin(String usuario, String contrasena){
-        nombreUsuario = usuario;
-        return true; //ver si en verdad está y devolver otra cosa si no
+        Usuario logeado = gestorUsuarios.login(usuario, contrasena);
+        if (logeado != null){
+            usuarioActual = logeado;
+            return true;
+        }
+        return false;
     }
 
     private void procesarComando(Mensaje mensaje) {
@@ -105,17 +120,17 @@ public class ManejadorCliente implements Runnable {
                 break;
 
             case "BID":
-                System.out.println("[" + nombreUsuario + "] Pidió hacer una puja");
+                System.out.println("[" + usuarioActual.getNombre() + "] Pidió hacer una puja");
                 manejarPuja(mensaje);
                 break;
 
             case "INFO":
-                System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
+                System.out.println("[" + usuarioActual.getNombre() + "] Pidió información de una subasta");
                 manejarInfo(mensaje);
                 break;
 
             case "SALIR":
-                System.out.println("[" + nombreUsuario + "] Terminó");
+                System.out.println("[" + usuarioActual.getNombre() + "] Terminó");
                 conexion = false;
                 break;
 
@@ -133,7 +148,7 @@ public class ManejadorCliente implements Runnable {
             return;
         }
 
-        Subasta subasta = gestor.buscarSubasta(idSubasta);
+        Subasta subasta = gestorSubastas.buscarSubasta(idSubasta);
 
         if (subasta == null) {
             out.println("BID_ERROR:Subasta no encontrada");
@@ -145,10 +160,10 @@ public class ManejadorCliente implements Runnable {
             return;
         }
 
-        boolean exitosa = gestor.procesarPuja(idSubasta, nombreUsuario, cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual y realiza la puja
+        boolean exitosa = gestorSubastas.procesarPuja(idSubasta, usuarioActual.getNombre(), cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual y realiza la puja
 
         if (exitosa) {
-            System.out.println("[" + nombreUsuario + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
+            System.out.println("[" + usuarioActual.getNombre() + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
             out.println("BID_OK:" + idSubasta + ":" + String.format("%.2f", cantidad));
         } else {
             out.println("BID_ERROR:Cantidad debe ser > €" +
@@ -160,9 +175,9 @@ public class ManejadorCliente implements Runnable {
 
         int idSubasta = mensaje.getParametroInt(0);
 
-        System.out.println("[" + nombreUsuario + "] Pidió INFO de subasta #" + idSubasta);
+        System.out.println("[" + usuarioActual.getNombre() + "] Pidió INFO de subasta #" + idSubasta);
 
-        Subasta subasta = gestor.buscarSubasta(idSubasta);
+        Subasta subasta = gestorSubastas.buscarSubasta(idSubasta);
 
         if (subasta == null) {
             out.println("ERROR:Subasta no encontrada");
@@ -173,8 +188,8 @@ public class ManejadorCliente implements Runnable {
     }
 
     private void manejarListar() {
-        System.out.println("[" + nombreUsuario + "] Pidió listar subastas");
-        List<Subasta> subastas = gestor.obtenerSubastas();
+        System.out.println("[" + usuarioActual.getNombre() + "] Pidió listar subastas");
+        List<Subasta> subastas = gestorSubastas.obtenerSubastas();
 
         if (subastas.isEmpty()) {
             out.println("LISTA_VACIA");
@@ -202,7 +217,7 @@ public class ManejadorCliente implements Runnable {
  * if (in != null) in.close();
  * if (out != null) out.close();
  * if (socket != null) socket.close();
- * System.out.println("[SERVIDOR] Desconectado: " + nombreUsuario);
+ * System.out.println("[SERVIDOR] Desconectado: " + usuarioActual.getNombre());
  * } catch (IOException e) {
  * System.err.println("[ERROR] Al cerrar conexión: " + e.getMessage());
  * }

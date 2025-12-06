@@ -13,7 +13,6 @@ public class ClienteSubastas {
     // dar problemas
     // Cada cliente se va a ejecutar por separado, no usamos objetos y ya.
     // No tenemos que instanciar objetos y tenemos acceso fácil
-
     private static final String HOST = "localhost";
     private static final int PUERTO = 5000;
 
@@ -34,16 +33,80 @@ public class ClienteSubastas {
 
             System.out.println("SIUUU!! Conectado al server en " + HOST + ":" + PUERTO);
 
-            if (login()) {
-                conexion = true;
-                while (conexion){
-                    mostrarMenu();
+            boolean autenticado = false;
+            while (!autenticado) {
+                System.out.println("======= BIENVENIDO =======");
+                System.out.println("1. Eres nuevo? Regístrate!");
+                System.out.println("2. Iniciar sesión");
+                System.out.println("3. Salir");
+                System.out.print("Opción: ");
+
+                int opcion = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (opcion) {
+                    case 1:
+                        autenticado = registro();
+                        break;
+                    case 2:
+                        autenticado = login();
+                        break;
+                    case 3:
+                        System.out.println("Hasta luego!");
+                        socket.close();
+                        break;
+
+                    default: // Hecho automáticamente no sé
+                        System.out.println("Opción inválida");
+                        break;
                 }
+            }
+            conexion = true;
+            while (conexion) {
+                mostrarMenu();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean registro() {
+        System.out.println("\n=== REGISTRO DE NUEVO USUARIO ===");
+        System.out.print("Elige un nombre de usuario: ");
+        String usuario = scanner.nextLine();
+
+        System.out.print("Elige una contraseña: ");
+        String password = scanner.nextLine();
+
+        System.out.print("Confirma la contraseña: ");
+        String passwordConfirm = scanner.nextLine();
+
+        // Validación local
+        if (!password.equals(passwordConfirm)) {
+            System.out.println("Las contraseñas no coinciden");
+            return false;
+        }
+
+        // Enviar solicitud de registro al servidor
+        out.println("REGISTER:" + usuario + ":" + password);
+
+        try {
+            String respuesta = in.readLine();
+            if (respuesta.startsWith("REGISTER_OK")) {
+                nombreUsuario = usuario;
+                System.out.println("Registrado correctamente! Bienvenido " + usuario);
+                return true;
+            } else if (respuesta.startsWith("REGISTER_ERROR:")) {
+                String error = respuesta.substring(15);
+                System.out.println(error);
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private static boolean login() {
@@ -59,14 +122,17 @@ public class ClienteSubastas {
             if (respuesta.equals("LOGIN_OK")) {
                 System.out.println("ME HE LOGEADO BIENN");
                 return true;
-            } else {
-                return false;
+            } else if (respuesta.startsWith("LOGIN_ERROR:")) {
+            String error = respuesta.substring(12);
+            System.out.println("✗ " + error);
+            return false;
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
+        return false;
 
     }
 
@@ -137,14 +203,13 @@ public class ClienteSubastas {
 
     }
 
-    private static void infoSubasta(){
+    private static void infoSubasta() {
         System.out.println("Elige una subasta entre las disponibles:");
         int idSubasta = scanner.nextInt(); //Manejar si no mete un int?
         out.println("INFO:" + idSubasta);
-        try{
-        System.out.println(in.readLine());
-        }
-        catch (IOException e){
+        try {
+            System.out.println(in.readLine());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

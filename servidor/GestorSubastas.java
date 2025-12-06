@@ -1,10 +1,9 @@
 package servidor;
 
+import compartido.Subasta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import compartido.Subasta;
 
 public class GestorSubastas {
     private List<Subasta> subastas;
@@ -70,5 +69,4 @@ public class GestorSubastas {
             }
         }
     }
-
 }
