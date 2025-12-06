@@ -29,22 +29,32 @@ public class ManejadorCliente implements Runnable {
             // Crear streams de entrada/salida
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-/*
-            // Pedir nombre de usuario
-            out.println("NOMBRE_REQUERIDO");
-            nombreUsuario = in.readLine();
 
-            if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
-                nombreUsuario = "Usuario_" + System.currentTimeMillis();
+            String lineaLogin = in.readLine();
+            Mensaje mensajeLogin = Mensaje.parsear(lineaLogin);
+
+            if (mensajeLogin == null || !mensajeLogin.getComando().equals("LOGIN")) {
+                out.println("LOGIN_ERROR:Formato de login inválido");
+                socket.close();
+                return;
             }
 
-            System.out.println("[SERVIDOR] Se conectó: " + nombreUsuario);
-            out.println("BIENVENIDA:" + nombreUsuario);
-*/
+
+            if (manejarLogin(mensajeLogin.getParametro(0), mensajeLogin.getParametro(1))){
+                out.println("LOGIN_OK");
+            }
+            else {
+                out.println("LOGIN_ERROR");
+                socket.close();
+                return;
+            }
 
             //El cliente al principio manda LOGIN:USER:CONTRASEÑA
             //Se lee ese mensaje y se hace una función de check LOGIN
             //Se devuelve un mensaje de cómo ha ido el login
+/*
+
+
 
             String mensajeLogin = in.readLine();
             String [] splitLogin = mensajeLogin.split(":");
@@ -57,7 +67,7 @@ public class ManejadorCliente implements Runnable {
             else {
                 out.println("LOGIN_ERROR");
                 //Si da error, qué hacemos? No se debería de seguir con el código
-            }
+            } */
 
             String linea;
             while ((linea = in.readLine()) != null) {
@@ -79,6 +89,7 @@ public class ManejadorCliente implements Runnable {
     }
 
     private boolean manejarLogin(String usuario, String contrasena){
+        nombreUsuario = usuario;
         return true; //ver si en verdad está y devolver otra cosa si no
     }
 
