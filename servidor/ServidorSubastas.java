@@ -15,12 +15,14 @@ public class ServidorSubastas {
 
     private ServerSocket servidor;
     private ExecutorService pool;
-    private GestorSubastas gestor;
+    private GestorSubastas gestorSubastas;
+    private GestorUsuarios gestorUsuarios;
 
     public ServidorSubastas() throws IOException {
         this.servidor = new ServerSocket(PUERTO);
         this.pool = Executors.newFixedThreadPool(NUM_HILOS);
-        this.gestor = new GestorSubastas();
+        this.gestorSubastas = new GestorSubastas();
+        this.gestorUsuarios = new GestorUsuarios();
     }
 
     public static void main(String[] args) {
@@ -34,6 +36,7 @@ public class ServidorSubastas {
 
     private void iniciar() {
         inicializarSubastas();
+        
 
         System.out.println("SERVIDOR DE SUBASTAS INICIADO");
 
