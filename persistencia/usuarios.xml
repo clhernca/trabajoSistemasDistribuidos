@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <usuarios>
     <usuario>
-        <contraseña>calracontrase¤a</contraseña>
+        <contraseña>c</contraseña>
+        <historialPujas/>
         <nombre>clara</nombre>
         <saldo>1000.0</saldo>
         <subastasGanadas>0</subastasGanadas>
