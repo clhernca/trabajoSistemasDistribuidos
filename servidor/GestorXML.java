@@ -31,7 +31,7 @@ public class GestorXML {
     public static void guardarSubastas(List<Subasta> subastas) {
         try {
             SubastasXML wrapper = new SubastasXML();
-            wrapper.subastas = subastas; // Metes todas las subastas en el contenedor
+            wrapper.subastas = new ArrayList<>(subastas); // Metes todas las subastas en el contenedor
 
             JAXBContext context = JAXBContext.newInstance(SubastasXML.class);
             Marshaller marshaller = context.createMarshaller();

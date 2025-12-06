@@ -56,10 +56,16 @@ public class Subasta implements java.io.Serializable {
     public int getId() {
         return id;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @XmlElement
     public String getTitulo() {
         return titulo;
+    }
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     @XmlElement
