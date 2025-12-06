@@ -22,6 +22,7 @@ public class ClienteSubastas {
     private static PrintWriter out;
     private static Scanner scanner;
     private static String nombreUsuario;
+    private static boolean conexion;
     // Private static float saldo; ?????
 
     public static void main(String[] args) {
@@ -34,7 +35,10 @@ public class ClienteSubastas {
             System.out.println("SIUUU!! Conectado al server en " + HOST + ":" + PUERTO);
 
             if (login()) {
-                mostrarMenu();
+                conexion = true;
+                while (conexion){
+                    mostrarMenu();
+                }
             }
 
         } catch (Exception e) {
@@ -69,8 +73,9 @@ public class ClienteSubastas {
     private static void mostrarMenu() {
         System.out.println("======= MENÚ =======");
         System.out.println("1. Listar subastas");
-        System.out.println("2. Pujar");
-        System.out.println("3. Salir");
+        System.out.println("2. Informacion sobre una subasta concreta");
+        System.out.println("3. Pujar");
+        System.out.println("4. Salir");
         System.out.print("Opción: ");
 
         int opcion = scanner.nextInt();
@@ -79,10 +84,14 @@ public class ClienteSubastas {
                 listarSubastas();
                 break;
             case 2:
-                pujar();
+                infoSubasta();
                 break;
             case 3:
+                pujar();
+                break;
+            case 4:
                 salir();
+                break;
             default: // Hecho automáticamente no sé
                 throw new AssertionError();
         }
@@ -128,6 +137,18 @@ public class ClienteSubastas {
 
     }
 
+    private static void infoSubasta(){
+        System.out.println("Elige una subasta entre las disponibles:");
+        int idSubasta = scanner.nextInt(); //Manejar si no mete un int?
+        out.println("INFO:" + idSubasta);
+        try{
+        System.out.println(in.readLine());
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
     private static void pujar() {
         System.out.println("Introduce el numero de la subasta en la que quieres pujar:");
         int idSubasta = scanner.nextInt();
@@ -155,6 +176,7 @@ public class ClienteSubastas {
     }
 
     private static void salir() {
-        // No se
+        out.println("SALIR");
+        conexion = false;
     }
 }

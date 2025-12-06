@@ -16,6 +16,7 @@ public class ManejadorCliente implements Runnable {
     private String nombreUsuario;
     private BufferedReader in;
     private PrintWriter out;
+    private boolean conexion;
 
     public ManejadorCliente(Socket socket, GestorSubastas gestor) {
         this.socket = socket;
@@ -42,6 +43,7 @@ public class ManejadorCliente implements Runnable {
 
             if (manejarLogin(mensajeLogin.getParametro(0), mensajeLogin.getParametro(1))){
                 out.println("LOGIN_OK");
+                conexion = true;
             }
             else {
                 out.println("LOGIN_ERROR");
@@ -70,7 +72,8 @@ public class ManejadorCliente implements Runnable {
             } */
 
             String linea;
-            while ((linea = in.readLine()) != null) {
+            while (conexion) {
+                linea = in.readLine();
                 Mensaje mensaje = Mensaje.parsear(linea);
 
                 if (mensaje == null) {
@@ -109,6 +112,11 @@ public class ManejadorCliente implements Runnable {
             case "INFO":
                 System.out.println("[" + nombreUsuario + "] Pidió información de una subasta");
                 manejarInfo(mensaje);
+                break;
+
+            case "SALIR":
+                System.out.println("[" + nombreUsuario + "] Terminó");
+                conexion = false;
                 break;
 
             default:
