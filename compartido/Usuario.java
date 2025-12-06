@@ -68,6 +68,7 @@ public class Usuario {
     }
 
     public synchronized void registrarPuja(Puja puja) {
+        System.out.println("AÑADO PUJA");
         historialPujas.add(puja);
     }
 
@@ -75,9 +76,30 @@ public class Usuario {
         subastasGanadas++;
     }
 
+    public String mostrarHistorial() {
+    if (historialPujas == null || historialPujas.isEmpty()) {
+        return "No has realizado ninguna puja todavía.";
+    }
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("\n═══════════════════════════════════════════════════════\n");
+    sb.append("              HISTORIAL DE PUJAS DE ").append(nombre.toUpperCase()).append("\n");
+    sb.append("═══════════════════════════════════════════════════════\n\n");
+    
+    for (Puja p : historialPujas) {
+        sb.append("🔹 Subasta #").append(p.getIdSubasta()).append("\n");
+        sb.append("   💵 Cantidad: €").append(String.format("%.2f", p.getCantidad())).append("\n");
+        sb.append("   🕐 Hora: ").append(p.getFechaFormato()).append("\n\n");
+    }
+    
+    sb.append("═══════════════════════════════════════════════════════\n");
+    sb.append("Total de pujas realizadas: ").append(historialPujas.size()).append("\n");
+    
+    return sb.toString();
+}
+
     public String toString() {
         return nombre + " (€" + String.format("%.2f", saldo) + ") - " +
                subastasGanadas + " subastas ganadas";
     }
-
 }

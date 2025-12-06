@@ -128,6 +128,11 @@ private boolean manejarRegistro(String usuario, String contrasena) {
                 System.out.println("[" + usuarioActual.getNombre() + "] Pidió información de una subasta");
                 manejarInfo(mensaje);
                 break;
+                
+            case "CONSULT":
+                System.out.println("[" + usuarioActual.getNombre() + "] Pidió información propia");
+                consultar(mensaje.getParametro(0));
+                break;
 
             case "SALIR":
                 System.out.println("[" + usuarioActual.getNombre() + "] Terminó");
@@ -160,10 +165,19 @@ private boolean manejarRegistro(String usuario, String contrasena) {
             return;
         }
 
+        if (!usuarioActual.puedePujar(cantidad)) {
+            out.println("BID_ERROR:Saldo insuficiente. Tienes €" +
+                    String.format("%.2f", usuarioActual.getSaldo()));
+            return;
+        }
         boolean exitosa = gestorSubastas.procesarPuja(idSubasta, usuarioActual.getNombre(), cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual y realiza la puja
 
         if (exitosa) {
             System.out.println("[" + usuarioActual.getNombre() + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
+            System.out.println("Pujas antes: " + usuarioActual.getHistorialPujas().size());
+
+            usuarioActual.registrarPuja(new Puja(usuarioActual.getNombre(), idSubasta, cantidad));
+            System.out.println("Pujas despues: " + usuarioActual.getHistorialPujas().size());
             out.println("BID_OK:" + idSubasta + ":" + String.format("%.2f", cantidad));
         } else {
             out.println("BID_ERROR:Cantidad debe ser > €" +
@@ -186,6 +200,20 @@ private boolean manejarRegistro(String usuario, String contrasena) {
 
         out.println("INFO:" + subasta.toString());
     }
+
+    private void consultar(String param){
+    if (param.equals("credit")){
+        out.println("SALDO:Tu saldo actual es: €" + String.format("%.2f", usuarioActual.getSaldo()));
+    }
+    else if (param.equals("history")){
+        String historial = usuarioActual.mostrarHistorial();
+        String historialEscapado = historial.replace("\n", "{{NL}}");
+        out.println("HISTORIAL:" + historialEscapado);
+    }
+    else {
+        out.println("ERROR:Comando de consulta desconocido");
+    }
+}
 
     private void manejarListar() {
         System.out.println("[" + usuarioActual.getNombre() + "] Pidió listar subastas");

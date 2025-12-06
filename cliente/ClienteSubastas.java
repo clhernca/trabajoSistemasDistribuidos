@@ -141,7 +141,10 @@ public class ClienteSubastas {
         System.out.println("1. Listar subastas");
         System.out.println("2. Informacion sobre una subasta concreta");
         System.out.println("3. Pujar");
-        System.out.println("4. Salir");
+        System.out.println("4. Consultar saldo");
+        System.out.println("5. Consultar historial");
+        System.out.println("6. Salir");
+        
         System.out.print("Opción: ");
 
         int opcion = scanner.nextInt();
@@ -156,6 +159,12 @@ public class ClienteSubastas {
                 pujar();
                 break;
             case 4:
+                consultarSaldo();
+                break;
+            case 5:
+                consultarHistorial();
+                break;
+            case 6:
                 salir();
                 break;
             default: // Hecho automáticamente no sé
@@ -230,15 +239,45 @@ public class ClienteSubastas {
                 System.out.println("La puja aceptada");
 
             } else if (respuesta.startsWith("BID_ERROR")) {
-                String resto = respuesta.substring(10); // Quitar "BID_ERROR:"
+                String resto = respuesta.substring(10);
                 System.out.println("La puja no fue aceptada: " + resto);
 
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+
+    private static void consultarHistorial(){
+    out.println("CONSULT:history");
+    try {
+        String respuesta = in.readLine();
+        if (respuesta.startsWith("HISTORIAL:")) {
+            String historial = respuesta.substring(10);
+            historial = historial.replace("{{NL}}", "\n");
+            System.out.println(historial);
+        } else {
+            System.out.println("Error al consultar historial");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+private static void consultarSaldo(){
+    out.println("CONSULT:credit");
+    try {
+        String respuesta = in.readLine();
+        if (respuesta.startsWith("SALDO:")) {
+            String mensaje = respuesta.substring(6);
+            System.out.println("\n " + mensaje);
+        } else {
+            System.out.println("Error al consultar saldo");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
 
     private static void salir() {
         out.println("SALIR");

@@ -5,11 +5,13 @@ import java.time.format.DateTimeFormatter;
 
 public class Puja {
     private String usuario;
+    private int idSubasta;
     private double cantidad;
     private long timestamp;
 
-    public Puja(String usuario, double cantidad) {
+    public Puja(String usuario, int id, double cantidad) {
         this.usuario = usuario;
+        this.idSubasta = id;
         this.cantidad = cantidad;
         this.timestamp = System.currentTimeMillis();
     }
@@ -24,6 +26,10 @@ public class Puja {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public int getIdSubasta(){
+        return this.idSubasta;
     }
 
     public String getFechaFormato() {
