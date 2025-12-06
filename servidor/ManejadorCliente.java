@@ -137,7 +137,7 @@ public class ManejadorCliente implements Runnable {
             return;
         }
 
-        boolean exitosa = gestor.procesarPuja(idSubasta, nombreUsuario, cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual
+        boolean exitosa = gestor.procesarPuja(idSubasta, nombreUsuario, cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual y realiza la puja
 
         if (exitosa) {
             System.out.println("[" + nombreUsuario + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
