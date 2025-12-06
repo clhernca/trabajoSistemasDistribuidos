@@ -2,6 +2,8 @@ package compartido;
 
 import java.util.*;
 
+import jakarta.xml.bind.annotation.XmlElement;
+
 public class Usuario {
     private String nombre;
     private String contraseña;
@@ -18,7 +20,7 @@ public class Usuario {
         this.subastasGanadas = 0;
     }
 
-    //@XmlElement
+    @XmlElement
     public String getNombre() {
         return nombre;
     }
@@ -27,7 +29,7 @@ public class Usuario {
         this.nombre = nombre;
     }
 
-    //@XmlElement
+    @XmlElement
     public String getContraseña() {
         return contraseña;
     }
@@ -36,7 +38,7 @@ public class Usuario {
         this.contraseña = contraseña;
     }
 
-    //@XmlElement
+    @XmlElement
     public double getSaldo() {
         return saldo;
     }
@@ -45,12 +47,12 @@ public class Usuario {
         this.saldo = saldo;
     }
 
-    //@XmlElement
+    @XmlElement
     public List<Puja> getHistorialPujas() {
         return historialPujas;
     }
 
-    //@XmlElement
+    @XmlElement
     public int getSubastasGanadas() {
         return subastasGanadas;
     }

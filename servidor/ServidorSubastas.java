@@ -66,6 +66,46 @@ public class ServidorSubastas {
         }
     }
 
+    private void iniciarTemorizador() {
+        Thread temporizadorThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(5000); // Cada 5 segundos
+
+                    List<Subasta> finalizadas = gestorSubastas.verificarSubastasFinalizadas();
+
+                    if (!finalizadas.isEmpty()) {
+                        System.out.println("[TEMPORIZADOR] Se han finalizado " + finalizadas.size() + " subastas:");
+                        for (Subasta s : finalizadas) {
+                            String ganador = s.getGanador() != null ? s.getGanador() : "Ninguno"; // Obtiene el ganador
+                                                                                                  // o "Ninguno"
+                            System.out.println(s.getTitulo() + " → Ganador: " + ganador +
+                                    " | Precio: " + String.format("%.2f", s.getPrecioFinal()) + "€");
+
+                            // Registrar victoria del usuario
+                            if (s.getGanador() != null && !s.getGanador().equals("Ninguno")) { 
+                                Usuario ganadorUser = gestorUsuarios.obtenerUsuario(s.getGanador());
+                                if (ganadorUser != null) {
+                                    ganadorUser.ganarSubasta(); // Incrementa el contador de subastas ganadas
+                                }
+                            }
+                        }
+                        System.out.println();
+
+                    }
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Limpiar estado de interrupción
+                    e.printStackTrace();
+                }
+            }
+        });
+        
+        temporizadorThread.setDaemon(true);
+        temporizadorThread.start();
+    }
+
     private void iniciarPersistencia() {
         Thread persistenciaThread = new Thread(new Runnable() {
             @Override
