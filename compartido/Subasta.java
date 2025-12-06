@@ -2,7 +2,7 @@ package compartido;
 
 import jakarta.xml.bind.annotation.XmlElement;
 
-public class Subasta {
+public class Subasta implements java.io.Serializable {
     private int id;
     private String titulo; // Nombre del producto
     private double precioActual;

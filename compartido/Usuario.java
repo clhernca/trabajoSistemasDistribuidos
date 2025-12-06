@@ -4,12 +4,17 @@ import java.util.*;
 
 import jakarta.xml.bind.annotation.XmlElement;
 
-public class Usuario {
+public class Usuario implements java.io.Serializable {
     private String nombre;
     private String contraseña;
     private double saldo;
     private List<Puja> historialPujas;
     private int subastasGanadas;
+
+    public Usuario() {
+        // Constructor vacío para XML
+
+    }
 
 
     public Usuario(String nombre, String contraseña, double saldoInicial) {
