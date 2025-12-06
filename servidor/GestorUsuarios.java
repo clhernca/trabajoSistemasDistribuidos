@@ -56,6 +56,14 @@ public class GestorUsuarios {
     public Collection<Usuario> obtenerTodosUsuarios() {
         return usuarios.values();
     }
+    
+    public void inicializarUsuariosDemo() {
+        crearUsuario("alice", "pass123", 500.00);
+        crearUsuario("bob", "pass456", 400.00);
+        crearUsuario("charlie", "pass789", 600.00);
+        System.out.println("[SERVIDOR] Se crearon 3 usuarios de demo");
+    
+    }
 }
 
 

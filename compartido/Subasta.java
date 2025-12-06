@@ -1,6 +1,8 @@
 package compartido;
 
-public class Subasta {
+import jakarta.xml.bind.annotation.XmlElement;
+
+public class Subasta implements java.io.Serializable {
     private int id;
     private String titulo; // Nombre del producto
     private double precioActual;
@@ -40,8 +42,8 @@ public class Subasta {
         return false;
     }
 
-    public synchronized void cerrar(String ganador) {
-        activa = false;
+    public synchronized void cerrar(String ganador) { // Lo llama un hilo para cerrar la subasta
+        activa = false; // Marca la subasta como cerrada, registra el ganador y el precio final
         this.ganador = ganador;
         this.precioFinal = precioActual;
     }
@@ -50,17 +52,17 @@ public class Subasta {
         return activa && System.currentTimeMillis() < tiempoFinal;
     }
 
-    // @XmlElement
+    @XmlElement
     public int getId() {
         return id;
     }
 
-    // @XmlElement
+    @XmlElement
     public String getTitulo() {
         return titulo;
     }
 
-    // @XmlElement
+    @XmlElement
     public synchronized double getPrecioActual() {
         return precioActual;
     }
@@ -69,7 +71,7 @@ public class Subasta {
         this.precioActual = precioActual;
     }
 
-    // @XmlElement
+    @XmlElement
     public synchronized String getPujadorLider() {
         return pujadorLider;
     }
@@ -78,7 +80,7 @@ public class Subasta {
         this.pujadorLider = pujadorLider;
     }
 
-    // @XmlElement
+    @XmlElement
     public boolean isActiva() {
         return activa;
     }
@@ -87,7 +89,7 @@ public class Subasta {
         this.activa = activa;
     }
 
-    // @XmlElement
+    @XmlElement
     public long getTiempoFinal() {
         return tiempoFinal;
     }
@@ -96,7 +98,7 @@ public class Subasta {
         this.tiempoFinal = tiempoFinal;
     }
 
-    // @XmlElement
+    @XmlElement
     public String getGanador() {
         return ganador;
     }
@@ -105,7 +107,7 @@ public class Subasta {
         this.ganador = ganador;
     }
 
-    // @XmlElement
+    @XmlElement
     public double getPrecioFinal() {
         return precioFinal;
     }

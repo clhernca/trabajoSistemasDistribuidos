@@ -69,4 +69,40 @@ public class GestorSubastas {
             }
         }
     }
+
+    public List<Subasta> verificarSubastasFinalizadas() { // Devuelve las subastas finalizadas 
+        List<Subasta> finalizadas = new ArrayList<>();
+        synchronized (subastas) {
+            for (Subasta s : subastas) {
+                if (s.isActiva() && !s.estaActiva()) { // Si está activa pero ya ha pasado el tiempo
+                    s.cerrar(s.getPujadorLider()); // La cierra y registra el ganador y precio final
+                    finalizadas.add(s);
+                }
+            }
+        }
+        return finalizadas;
+    }
+
+    public List<Subasta> obtenerSubastasFinalizadas() {
+        List<Subasta> finalizadas = new ArrayList<>();
+        synchronized (subastas) {
+            for (Subasta s : subastas) {
+                if (!s.isActiva()) {
+                    finalizadas.add(s);
+                }
+            }
+        }
+        return finalizadas;
+    }
+
+    public void inicializarSubastasDemo() {
+        agregarSubasta(new Subasta(1, "Laptop Dell XPS", 150.00));
+        agregarSubasta(new Subasta(2, "iPhone 15 Pro", 200.00));
+        agregarSubasta(new Subasta(3, "PlayStation 5", 300.00));
+        agregarSubasta(new Subasta(4, "AirPods Pro", 75.00));
+        agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
+
+        System.out.println("[SERVIDOR] Se crearon 5 subastas de prueba");
+    
+    }
 }
