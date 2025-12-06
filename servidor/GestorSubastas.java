@@ -69,4 +69,15 @@ public class GestorSubastas {
             }
         }
     }
+
+    public void inicializarSubastasDemo() {
+        agregarSubasta(new Subasta(1, "Laptop Dell XPS", 150.00));
+        agregarSubasta(new Subasta(2, "iPhone 15 Pro", 200.00));
+        agregarSubasta(new Subasta(3, "PlayStation 5", 300.00));
+        agregarSubasta(new Subasta(4, "AirPods Pro", 75.00));
+        agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
+
+        System.out.println("[SERVIDOR] Se crearon 5 subastas de prueba");
+    
+    }
 }

@@ -1,16 +1,19 @@
 package servidor;
 
 import compartido.Subasta;
+import compartido.Usuario;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.List;
 
 public class ServidorSubastas {
 
     private static final int PUERTO = 5000;
-    private static final int NUM_HILOS = 10; //POR QUÉ FIXED??
+    // private static final int NUM_HILOS = 10;
 
     private ServerSocket servidor;
     private ExecutorService pool;
@@ -19,7 +22,7 @@ public class ServidorSubastas {
 
     public ServidorSubastas() throws IOException {
         this.servidor = new ServerSocket(PUERTO);
-        this.pool = Executors.newFixedThreadPool(NUM_HILOS);
+        this.pool = Executors.newCachedThreadPool();
         this.gestorSubastas = new GestorSubastas();
         this.gestorUsuarios = new GestorUsuarios();
     }
@@ -27,33 +30,27 @@ public class ServidorSubastas {
     public static void main(String[] args) {
         try {
             ServidorSubastas servidor = new ServidorSubastas();
+            System.out.println("[SERVIDOR] Servidor de subastas iniciado en el puerto " + PUERTO);
+
             servidor.iniciar();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void iniciar() {
+        cargarDatos();
+        System.out.println("[SERVIDOR] Datos cargados");
 
-        inicializarSubastas();
-        inicializarUsuarios();
-        System.out.println("SERVIDOR DE SUBASTAS INICIADO");
+        // Hilo que verifica subastas finalizadas cada 5 segundos
+        // iniciarTemorizador();
 
-        /*
-         * // Thread para mostrar estado periódicamente
-         * Thread mostrador = new Thread(() -> {
-         * try {
-         * while (true) {
-         * Thread.sleep(30000); // Cada 30 segundos
-         * gestor.mostrarEstadoSubastas();
-         * }
-         * } catch (InterruptedException e) {
-         * Thread.currentThread().interrupt();
-         * }
-         * });
-         * mostrador.setDaemon(true);
-         * mostrador.start();
-         */
+        // Hilo para mostrar estado periódicamente
+        // iniciarMostrador();
+
+        // Hilo para persistencia periódica
+        iniciarPersistencia();
 
         while (true) {
             try {
@@ -67,23 +64,49 @@ public class ServidorSubastas {
                 System.err.println("Error al aceptar cliente: " + e.getMessage());
             }
         }
-
     }
 
-    private void inicializarSubastas() {
-        gestorSubastas.agregarSubasta(new Subasta(1, "Laptop Dell XPS", 150.00));
-        gestorSubastas.agregarSubasta(new Subasta(2, "iPhone 15 Pro", 200.00));
-        gestorSubastas.agregarSubasta(new Subasta(3, "PlayStation 5", 300.00));
-        gestorSubastas.agregarSubasta(new Subasta(4, "AirPods Pro", 75.00));
-        gestorSubastas.agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
+    private void iniciarPersistencia() {
+        Thread persistenciaThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        System.out.println("[SERVIDOR] Se crearon 5 subastas de prueba");
+                    Thread.sleep(60000); // Espera un minuto
+                    GestorXML.guardarUsuarios(gestorUsuarios
+                            .obtenerTodosUsuarios());
+                    GestorXML.guardarSubastas(gestorSubastas.obtenerSubastas());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        persistenciaThread.setDaemon(true); // Hilo daemon para que no bloquee el cierre del programa
+        persistenciaThread.start();
     }
 
-    private void inicializarUsuarios(){
-        gestorUsuarios.crearUsuario("pepe", "pass123", 500.00);
-        gestorUsuarios.crearUsuario("luisa", "pass456", 400.00);
-        gestorUsuarios.crearUsuario("juan", "pass789", 600.00);
+    private void cargarDatos() {
+        System.out.println("[SERVIDOR] Cargando datos...");
+
+        List<Usuario> usuariosGuardados = GestorXML.cargarUsuarios(); // Carga usuarios desde XML
+        if (usuariosGuardados.isEmpty()) {
+            gestorUsuarios.inicializarUsuariosDemo(); // Si no hay usuarios guardados, crea algunos de demo
+        } else {
+            for (Usuario u : usuariosGuardados) {
+                gestorUsuarios.agregarUsuario(u); // Agrega cada usuario cargado al gestor de usuarios
+            }
+        }
+
+        List<Subasta> subastasGuardadas = GestorXML.cargarSubastas(); // Lo mismo con las subastas
+        if (subastasGuardadas.isEmpty()) {
+            gestorSubastas.inicializarSubastasDemo();
+        } else {
+            for (Subasta s : subastasGuardadas) {
+                gestorSubastas.agregarSubasta(s);
+            }
+        }
     }
 
 }
