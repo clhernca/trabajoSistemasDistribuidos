@@ -1,6 +1,6 @@
 package compartido;
 
-import java.util.List;
+import java.util.*;
 
 public class Usuario {
     private String nombre;
@@ -8,4 +8,76 @@ public class Usuario {
     private double saldo;
     private List<Puja> historialPujas;
     private int subastasGanadas;
+
+
+    public Usuario(String nombre, String contraseña, double saldoInicial) {
+        this.nombre = nombre;
+        this.contraseña = contraseña;
+        this.saldo = saldoInicial;
+        this.historialPujas = new ArrayList<>();
+        this.subastasGanadas = 0;
+    }
+
+    //@XmlElement
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    //@XmlElement
+    public String getContraseña() {
+        return contraseña;
+    }
+
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+
+    //@XmlElement
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
+    //@XmlElement
+    public List<Puja> getHistorialPujas() {
+        return historialPujas;
+    }
+
+    //@XmlElement
+    public int getSubastasGanadas() {
+        return subastasGanadas;
+    }
+
+    public synchronized boolean puedePujar(double cantidad) {
+        return saldo >= cantidad;
+    }
+
+    public synchronized void restarSaldo(double cantidad) {
+        saldo -= cantidad;
+    }
+
+    public synchronized void sumarSaldo(double cantidad) {
+        saldo += cantidad;
+    }
+
+    public synchronized void registrarPuja(Puja puja) {
+        historialPujas.add(puja);
+    }
+
+    public synchronized void ganarSubasta() {
+        subastasGanadas++;
+    }
+
+    public String toString() {
+        return nombre + " (€" + String.format("%.2f", saldo) + ") - " +
+               subastasGanadas + " subastas ganadas";
+    }
+
 }
