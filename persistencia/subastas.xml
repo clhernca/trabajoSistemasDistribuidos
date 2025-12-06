@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<subastas>
+    <subasta>
+        <activa>true</activa>
+        <id>0</id>
+        <precioActual>150.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765056924017</tiempoFinal>
+    </subasta>
+    <subasta>
+        <activa>true</activa>
+        <id>0</id>
+        <precioActual>200.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765056924017</tiempoFinal>
+    </subasta>
+    <subasta>
+        <activa>true</activa>
+        <id>0</id>
+        <precioActual>300.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765056924017</tiempoFinal>
+    </subasta>
+    <subasta>
+        <activa>true</activa>
+        <id>0</id>
+        <precioActual>75.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765056924017</tiempoFinal>
+    </subasta>
+    <subasta>
+        <activa>true</activa>
+        <id>0</id>
+        <precioActual>250.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765056924017</tiempoFinal>
+    </subasta>
+</subastas>

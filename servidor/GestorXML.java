@@ -25,8 +25,8 @@ class UsuariosXML {
 }
 
 public class GestorXML {
-    private static final String ARCHIVO_SUBASTAS = "../persistencia/subastas.xml";
-    private static final String ARCHIVO_USUARIOS = "../persistencia/usuarios.xml";
+    private static final String ARCHIVO_SUBASTAS = "./persistencia/subastas.xml";
+    private static final String ARCHIVO_USUARIOS = "./persistencia/usuarios.xml";
 
     public static void guardarSubastas(List<Subasta> subastas) {
         try {
@@ -48,6 +48,11 @@ public class GestorXML {
     public static List<Subasta> cargarSubastas() {
         try {
             File archivo = new File(ARCHIVO_SUBASTAS);
+            File directorio = archivo.getParentFile();
+            if (directorio != null && !directorio.exists()) {
+                directorio.mkdirs(); // Crea el directorio 'persistencia' si no existe
+            }
+
             if (!archivo.exists()) {
                 System.out.println("[XML] No se encontró el archivo de subastas. Se cargarán subastas vacías.");
                 return new ArrayList<>(); // Devuelve lista vacía si no existe el archivo
@@ -62,7 +67,7 @@ public class GestorXML {
 
         } catch (JAXBException e) {
             System.err.println("[ERROR XML] No se pudieron cargar subastas: " + e.getMessage());
-            return new ArrayList<>();   // Devuelve lista vacía en caso de error
+            return new ArrayList<>(); // Devuelve lista vacía en caso de error
         }
     }
 
@@ -85,9 +90,15 @@ public class GestorXML {
     public static List<Usuario> cargarUsuarios() {
         try {
             File archivo = new File(ARCHIVO_USUARIOS);
+            
+            File directorio = archivo.getParentFile();
+            if (directorio != null && !directorio.exists()) {
+                directorio.mkdirs(); // Crea el directorio 'persistencia' si no existe
+            }
+
             if (!archivo.exists()) {
                 System.out.println("[XML] No hay archivo de usuarios. Usando estado en memoria.");
-                return new ArrayList<>();   // Devuelve lista vacía si no existe el archivo
+                return new ArrayList<>(); // Devuelve lista vacía si no existe el archivo
             }
 
             JAXBContext context = JAXBContext.newInstance(UsuariosXML.class);
