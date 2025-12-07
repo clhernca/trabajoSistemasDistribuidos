@@ -44,7 +44,7 @@ public class ServidorSubastas {
         System.out.println("[SERVIDOR] Datos cargados");
 
         // Hilo que verifica subastas finalizadas cada 5 segundos
-        // iniciarTemorizador();
+        iniciarTemorizador();
 
         // Hilo para mostrar estado periódicamente
         // iniciarMostrador();
