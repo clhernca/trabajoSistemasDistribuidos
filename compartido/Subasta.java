@@ -37,8 +37,25 @@ public class Subasta implements java.io.Serializable {
         if (cantidad > precioActual) {
             precioActual = cantidad;
             pujadorLider = usuario;
+
+            extenderTiempo();
+
             return true;
         }
+        return false;
+    }
+
+    public synchronized boolean extenderTiempo() {
+        long segundosRestantes = getTiempoRestante();
+        
+        if (segundosRestantes > 0 && segundosRestantes <= 30) {
+            // Extender el tiempo
+            tiempoFinal += (30 * 1000);
+            System.out.println("[ANTI-SNIPING] Subasta #" + id + " '" + titulo + "' extendida +" + 
+                             30 + "s (quedaban " + segundosRestantes + "s)");
+            return true;
+        }
+        
         return false;
     }
 
