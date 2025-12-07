@@ -2,10 +2,37 @@
 <usuarios>
     <usuario>
         <contraseña>pass456</contraseña>
-        <historialPujas/>
+        <historialPujas>
+            <puja>
+                <usuario>bob</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>350.0</cantidad>
+                <timestamp>1765120522832</timestamp>
+            </puja>
+        </historialPujas>
         <nombre>bob</nombre>
         <saldo>400.0</saldo>
         <subastasGanadas>0</subastasGanadas>
+    </usuario>
+    <usuario>
+        <contraseña>xxx</contraseña>
+        <historialPujas>
+            <puja>
+                <usuario>manuel</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>350.0</cantidad>
+                <timestamp>1765120408965</timestamp>
+            </puja>
+            <puja>
+                <usuario>manuel</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>400.0</cantidad>
+                <timestamp>1765120538292</timestamp>
+            </puja>
+        </historialPujas>
+        <nombre>manuel</nombre>
+        <saldo>250.0</saldo>
+        <subastasGanadas>1</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass123</contraseña>
@@ -16,10 +43,22 @@
                 <cantidad>400.0</cantidad>
                 <timestamp>1765110399223</timestamp>
             </puja>
+            <puja>
+                <usuario>alice</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>400.0</cantidad>
+                <timestamp>1765119665040</timestamp>
+            </puja>
+            <puja>
+                <usuario>alice</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>400.0</cantidad>
+                <timestamp>1765120291419</timestamp>
+            </puja>
         </historialPujas>
         <nombre>alice</nombre>
-        <saldo>500.0</saldo>
-        <subastasGanadas>1</subastasGanadas>
+        <saldo>100.0</saldo>
+        <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass789</contraseña>

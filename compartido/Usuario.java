@@ -9,6 +9,7 @@ public class Usuario implements java.io.Serializable {
     private String nombre;
     private String contraseña;
     private double saldo;
+    private double saldoBloqueado;
     private List<Puja> historialPujas  = new ArrayList<>();
     private int subastasGanadas;
 
@@ -22,6 +23,7 @@ public class Usuario implements java.io.Serializable {
         this.nombre = nombre;
         this.contraseña = contraseña;
         this.saldo = saldoInicial;
+        this.saldoBloqueado = 0.0;
         //this.historialPujas = new ArrayList<>();
         this.subastasGanadas = 0;
     }
@@ -53,6 +55,38 @@ public class Usuario implements java.io.Serializable {
         this.saldo = saldo;
     }
 
+    public double getSaldoDisponible() {
+        return saldo - saldoBloqueado;
+    }
+    
+    public double getSaldoBloqueado() {
+        return saldoBloqueado;
+    }
+    
+    public boolean puedePujar(double cantidad) {
+        return getSaldoDisponible() >= cantidad;
+    }
+    
+    public synchronized void bloquearDinero(double cantidad) {
+        if (getSaldoDisponible() >= cantidad) {
+            saldoBloqueado += cantidad;
+        }
+    }
+    
+    public synchronized void liberarDinero(double cantidad) {
+        saldoBloqueado -= cantidad;
+    }
+    
+    public synchronized void confirmarGasto(double cantidad) {
+        saldoBloqueado -= cantidad;
+        saldo -= cantidad;
+        if (saldoBloqueado < 0) saldoBloqueado = 0;
+    }
+    
+    public synchronized void cancelarBloqueo(double cantidad) {
+        liberarDinero(cantidad);
+    }
+
     @XmlElementWrapper(name = "historialPujas")
     @XmlElement (name = "puja")
     public List<Puja> getHistorialPujas() {
@@ -62,10 +96,6 @@ public class Usuario implements java.io.Serializable {
     @XmlElement
     public int getSubastasGanadas() {
         return subastasGanadas;
-    }
-
-    public synchronized boolean puedePujar(double cantidad) {
-        return saldo >= cantidad;
     }
 
     public synchronized void restarSaldo(double cantidad) {

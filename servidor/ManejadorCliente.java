@@ -35,40 +35,40 @@ public class ManejadorCliente implements Runnable {
             boolean autenticado = false;
 
             while (!autenticado) {
-            String lineaAut = in.readLine();
-            Mensaje mensajeAut = Mensaje.parsear(lineaAut);
+                String lineaAut = in.readLine();
+                Mensaje mensajeAut = Mensaje.parsear(lineaAut);
 
-            if (mensajeAut == null) {
-                out.println("ERROR:Formato inválido");
-                return;
-            }
+                if (mensajeAut == null) {
+                    out.println("ERROR:Formato inválido");
+                    return;
+                }
 
-            String comando = mensajeAut.getComando();
+                String comando = mensajeAut.getComando();
 
-            if (comando.equals("LOGIN")) {
-            if (manejarLogin(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
-                out.println("LOGIN_OK");
-                autenticado = true;
-            } else {
-                out.println("LOGIN_ERROR:Usuario o contraseña incorrectos");
+                if (comando.equals("LOGIN")) {
+                    if (manejarLogin(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
+                        out.println("LOGIN_OK");
+                        autenticado = true;
+                    } else {
+                        out.println("LOGIN_ERROR:Usuario o contraseña incorrectos");
+                    }
+
+                } else if (comando.equals("REGISTER")) {
+                    if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
+                        // Registro exitoso, automáticamente lo logueamos
+                        //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
+                        usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0),
+                                mensajeAut.getParametro(1));
+                        out.println("REGISTER_OK");
+                        autenticado = true;
+                    } else {
+                        out.println("REGISTER_ERROR:El usuario ya existe");
+                    }
+
+                } else {
+                    out.println("ERROR:Se esperaba LOGIN o REGISTER");
+                }
             }
-            
-        } else if (comando.equals("REGISTER")) {
-            if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
-                // Registro exitoso, automáticamente lo logueamos
-                //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
-                usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0), 
-                                                      mensajeAut.getParametro(1));
-                out.println("REGISTER_OK");
-                autenticado = true;
-            } else {
-                out.println("REGISTER_ERROR:El usuario ya existe");
-            }
-            
-        } else {
-            out.println("ERROR:Se esperaba LOGIN o REGISTER");
-        }
-    }
 
             conexion = true;
             String linea;
@@ -91,20 +91,20 @@ public class ManejadorCliente implements Runnable {
         }
     }
 
-private boolean manejarRegistro(String usuario, String contrasena) {
+    private boolean manejarRegistro(String usuario, String contrasena) {
 
-    boolean registrado = gestorUsuarios.registrar(usuario, contrasena);
-    
-    if (registrado) {
-        System.out.println("[SERVIDOR] Nuevo usuario registrado: " + usuario);
+        boolean registrado = gestorUsuarios.registrar(usuario, contrasena);
+
+        if (registrado) {
+            System.out.println("[SERVIDOR] Nuevo usuario registrado: " + usuario);
+        }
+
+        return registrado;
     }
-    
-    return registrado;
-}
 
-    private boolean manejarLogin(String usuario, String contrasena){
+    private boolean manejarLogin(String usuario, String contrasena) {
         Usuario logeado = gestorUsuarios.login(usuario, contrasena);
-        if (logeado != null){
+        if (logeado != null) {
             usuarioActual = logeado;
             return true;
         }
@@ -128,7 +128,7 @@ private boolean manejarRegistro(String usuario, String contrasena) {
                 System.out.println("[" + usuarioActual.getNombre() + "] Pidió información de una subasta");
                 manejarInfo(mensaje);
                 break;
-                
+
             case "CONSULT":
                 System.out.println("[" + usuarioActual.getNombre() + "] Pidió información propia");
                 consultar(mensaje.getParametro(0));
@@ -166,22 +166,38 @@ private boolean manejarRegistro(String usuario, String contrasena) {
         }
 
         if (!usuarioActual.puedePujar(cantidad)) {
-            out.println("BID_ERROR:Saldo insuficiente. Tienes €" +
-                    String.format("%.2f", usuarioActual.getSaldo()));
+
+            out.println("BID_ERROR:Saldo insuficiente. Disponible: €"
+                    + String.format("%.2f", usuarioActual.getSaldoDisponible())
+                    + " (Bloqueado: €" + String.format("%.2f", usuarioActual.getSaldoBloqueado()) + ")");
             return;
         }
+
+        String pujadorAnterior = subasta.getPujadorLider();
+        double cantidadAnterior = subasta.getPrecioActual();
         boolean exitosa = gestorSubastas.procesarPuja(idSubasta, usuarioActual.getNombre(), cantidad); // Llama a pujar en Subasta que mira si la cantidad es mayor que el precio actual y realiza la puja
 
         if (exitosa) {
-            System.out.println("[" + usuarioActual.getNombre() + "] Pujo €" + String.format("%.2f", cantidad) + " en subasta #" + idSubasta);
-            System.out.println("Pujas antes: " + usuarioActual.getHistorialPujas().size());
+
+            if (!pujadorAnterior.equals("Ninguno")) {
+                Usuario usuarioAnterior = gestorUsuarios.obtenerUsuario(pujadorAnterior);
+                if (usuarioAnterior != null) {
+                    usuarioAnterior.liberarDinero(cantidadAnterior);
+                }
+            }
+
+            usuarioActual.bloquearDinero(cantidad);
+
+            System.out.println("[" + usuarioActual.getNombre() + "] Pujó €" + String.format("%.2f", cantidad)
+                    + " en subasta #" + idSubasta
+                    + " (Bloqueado: €" + String.format("%.2f", usuarioActual.getSaldoBloqueado()) + ")");
 
             usuarioActual.registrarPuja(new Puja(usuarioActual.getNombre(), idSubasta, cantidad));
-            System.out.println("Pujas despues: " + usuarioActual.getHistorialPujas().size());
             out.println("BID_OK:" + idSubasta + ":" + String.format("%.2f", cantidad));
+
         } else {
-            out.println("BID_ERROR:Cantidad debe ser > €" +
-                    String.format("%.2f", subasta.getPrecioActual()));
+            out.println("BID_ERROR:Cantidad debe ser > €"
+                    + String.format("%.2f", subasta.getPrecioActual()));
         }
     }
 
@@ -201,19 +217,20 @@ private boolean manejarRegistro(String usuario, String contrasena) {
         out.println("INFO:" + subasta.toString());
     }
 
-    private void consultar(String param){
-    if (param.equals("credit")){
-        out.println("SALDO:Tu saldo actual es: €" + String.format("%.2f", usuarioActual.getSaldo()));
+    private void consultar(String param) {
+        if (param.equals("credit")) {
+            out.println("SALDO:Tu saldo total: €" + String.format("%.2f", usuarioActual.getSaldo())
+                    + "{{NL}}Bloqueado en pujas: €" + String.format("%.2f", usuarioActual.getSaldoBloqueado())
+                    + "{{NL}}Disponible: €" + String.format("%.2f", usuarioActual.getSaldoDisponible()));
+
+        } else if (param.equals("history")) {
+            String historial = usuarioActual.mostrarHistorial();
+            String historialEscapado = historial.replace("\n", "{{NL}}");
+            out.println("HISTORIAL:" + historialEscapado);
+        } else {
+            out.println("ERROR:Comando de consulta desconocido");
+        }
     }
-    else if (param.equals("history")){
-        String historial = usuarioActual.mostrarHistorial();
-        String historialEscapado = historial.replace("\n", "{{NL}}");
-        out.println("HISTORIAL:" + historialEscapado);
-    }
-    else {
-        out.println("ERROR:Comando de consulta desconocido");
-    }
-}
 
     private void manejarListar() {
         System.out.println("[" + usuarioActual.getNombre() + "] Pidió listar subastas");

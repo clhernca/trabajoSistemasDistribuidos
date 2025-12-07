@@ -57,6 +57,7 @@ public class GestorUsuarios {
         return usuarios.values();
     }
     
+    
     public void inicializarUsuariosDemo() {
         crearUsuario("alice", "pass123", 500.00);
         crearUsuario("bob", "pass456", 400.00);

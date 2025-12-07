@@ -91,6 +91,7 @@ public class ServidorSubastas {
                                 if (s.getGanador() != null && !s.getGanador().equals("Ninguno")) {
                                     Usuario ganadorUser = gestorUsuarios.obtenerUsuario(s.getGanador());
                                     if (ganadorUser != null) {
+                                        ganadorUser.confirmarGasto(s.getPrecioFinal());
                                         ganadorUser.ganarSubasta(); // Incrementa el contador de subastas ganadas
                                     }
                                 }
