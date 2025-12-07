@@ -3,11 +3,21 @@ package compartido;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Puja {
     private String usuario;
     private int idSubasta;
     private double cantidad;
     private long timestamp;
+
+    public Puja() {
+        // Constructor vacío para XML
+    }
 
     public Puja(String usuario, int id, double cantidad) {
         this.usuario = usuario;

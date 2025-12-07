@@ -3,12 +3,13 @@ package compartido;
 import java.util.*;
 
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 
 public class Usuario implements java.io.Serializable {
     private String nombre;
     private String contraseña;
     private double saldo;
-    private List<Puja> historialPujas;
+    private List<Puja> historialPujas  = new ArrayList<>();
     private int subastasGanadas;
 
     public Usuario() {
@@ -21,7 +22,7 @@ public class Usuario implements java.io.Serializable {
         this.nombre = nombre;
         this.contraseña = contraseña;
         this.saldo = saldoInicial;
-        this.historialPujas = new ArrayList<>();
+        //this.historialPujas = new ArrayList<>();
         this.subastasGanadas = 0;
     }
 
@@ -52,7 +53,8 @@ public class Usuario implements java.io.Serializable {
         this.saldo = saldo;
     }
 
-    @XmlElement
+    @XmlElementWrapper(name = "historialPujas")
+    @XmlElement (name = "puja")
     public List<Puja> getHistorialPujas() {
         return historialPujas;
     }
