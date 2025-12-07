@@ -44,7 +44,7 @@ public class ServidorSubastas {
         System.out.println("[SERVIDOR] Datos cargados");
 
         // Hilo que verifica subastas finalizadas cada 5 segundos
-        iniciarTemorizador();
+        iniciarTemporizador();
 
         // Hilo para mostrar estado periódicamente
         // iniciarMostrador();
@@ -66,7 +66,7 @@ public class ServidorSubastas {
         }
     }
 
-    private void iniciarTemorizador() {
+    private void iniciarTemporizador() {
         Thread temporizadorThread = new Thread(new Runnable() {
             @Override
             public void run() {
