@@ -57,8 +57,8 @@ public class ClienteSubastas {
                         System.out.println("[CLIENT] Saliendo...");
                         return;
 
-                    default: // Hecho automáticamente no sé
-                        System.out.println("Opción inválida. Vuelve a intentarlo.");
+                    default:
+                        System.out.println("[CLIENT] Opción inválida. Vuelve a intentarlo.");
                         break;
                 }
             }
@@ -227,7 +227,9 @@ public class ClienteSubastas {
         System.out.println("3. Realizar puja");
         System.out.println("4. Consultar saldo");
         System.out.println("5. Ver historial de pujas");
-        System.out.println("6. Salir");
+        System.out.println("6. Agregar una subasta");
+        System.out.println("7. Ingresar dinero");
+        System.out.println("8. Salir");
 
         System.out.print("Opción: ");
 
@@ -249,10 +251,59 @@ public class ClienteSubastas {
                 consultarHistorial();
                 break;
             case 6:
+                agregarSubasta();
+                break;
+            case 7:
+                ingresarDinero();
+                break;
+            case 8:
                 salir();
                 break;
             default: // Hecho automáticamente no sé
                 throw new AssertionError();
+        }
+    }
+
+    private static void ingresarDinero() {
+        System.out.println("¿Cuánto dinero quieres ingresar?");
+        double cantidad = scanner.nextDouble();
+        out.println("DEP:" + cantidad); // Ingresar : deposit
+
+        try {
+            String respuesta = in.readLine();
+            if (respuesta.startsWith("DEP_OK:")) {
+                String nuevoSaldo = respuesta.substring(7);
+                System.out.println("[CLIENT] Depósito realizado. Nuevo saldo: " + nuevoSaldo + "€");
+            } else if (respuesta.startsWith("DEP_ERROR:")) {
+                String error = respuesta.substring(10);
+                System.out.println("[CLIENT] Error al ingresar dinero: " + error);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();}
+    }
+
+    private static void agregarSubasta() {
+        System.out.println("Introduce el título de la subasta:");
+        String titulo = scanner.nextLine();
+        System.out.println("Introduce la descripción de la subasta:");
+        String descripcion = scanner.nextLine();
+        System.out.println("Introduce el precio inicial:");
+        double precioInicial = scanner.nextDouble();
+        System.out.println("Introduce la duración en segundos:");
+        int duracion = scanner.nextInt();
+
+        out.println("ADD:" + titulo + ":" + descripcion + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Subasta1:Descripción1:100.0:60
+
+        try {
+            String respuesta = in.readLine();
+            if (respuesta.startsWith("ADD_OK")) {
+                System.out.println("[CLIENT] Subasta agregada correctamente.");
+            } else if (respuesta.startsWith("ADD_ERROR:")) {
+                String error = respuesta.substring(18);
+                System.out.println("[CLIENT] Error al agregar subasta: " + error);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

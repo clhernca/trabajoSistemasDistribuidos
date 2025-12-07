@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <usuarios>
     <usuario>
-        <contraseña>c</contraseña>
-        <historialPujas>
-            <puja>
-                <usuario>clara</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>450.0</cantidad>
-                <timestamp>1765124661445</timestamp>
-            </puja>
-        </historialPujas>
-        <nombre>clara</nombre>
-        <saldo>550.0</saldo>
-        <subastasGanadas>0</subastasGanadas>
-    </usuario>
-    <usuario>
         <contraseña>pass456</contraseña>
         <historialPujas/>
         <nombre>bob</nombre>
@@ -23,14 +9,7 @@
     </usuario>
     <usuario>
         <contraseña>pass123</contraseña>
-        <historialPujas>
-            <puja>
-                <usuario>alice</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>400.0</cantidad>
-                <timestamp>1765124643269</timestamp>
-            </puja>
-        </historialPujas>
+        <historialPujas/>
         <nombre>alice</nombre>
         <saldo>500.0</saldo>
         <subastasGanadas>0</subastasGanadas>

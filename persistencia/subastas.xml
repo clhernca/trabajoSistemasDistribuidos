@@ -2,12 +2,12 @@
 <subastas>
     <subasta>
         <activa>false</activa>
-        <ganador>clara</ganador>
+        <ganador>Ninguno</ganador>
         <id>1</id>
-        <precioActual>450.0</precioActual>
-        <precioFinal>450.0</precioFinal>
-        <pujadorLider>clara</pujadorLider>
-        <tiempoFinal>1765124689032</tiempoFinal>
+        <precioActual>150.0</precioActual>
+        <precioFinal>150.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>Laptop Dell XPS</titulo>
     </subasta>
     <subasta>
@@ -17,7 +17,7 @@
         <precioActual>200.0</precioActual>
         <precioFinal>200.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765124689032</tiempoFinal>
+        <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>iPhone 15 Pro</titulo>
     </subasta>
     <subasta>
@@ -27,7 +27,7 @@
         <precioActual>300.0</precioActual>
         <precioFinal>300.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765124689032</tiempoFinal>
+        <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>PlayStation 5</titulo>
     </subasta>
     <subasta>
@@ -37,7 +37,7 @@
         <precioActual>75.0</precioActual>
         <precioFinal>75.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765124689032</tiempoFinal>
+        <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>AirPods Pro</titulo>
     </subasta>
     <subasta>
@@ -47,7 +47,7 @@
         <precioActual>250.0</precioActual>
         <precioFinal>250.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765124689032</tiempoFinal>
+        <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
     </subasta>
 </subastas>
