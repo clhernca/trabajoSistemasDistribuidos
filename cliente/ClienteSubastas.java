@@ -158,6 +158,11 @@ public class ClienteSubastas {
         System.out.print("Elige un nombre de usuario: ");
         String usuario = scanner.nextLine();
 
+        if (usuario.trim().isEmpty()) {
+            System.out.println("[CLIENT] El nombre de usuario no puede estar vacío.");
+            return false;
+        }
+
         System.out.print("Elige una contraseña: ");
         String password = scanner.nextLine();
 
@@ -278,7 +283,8 @@ public class ClienteSubastas {
                 System.out.println("[CLIENT] Error al ingresar dinero: " + error);
             }
         } catch (IOException e) {
-            e.printStackTrace();}
+            e.printStackTrace();
+        }
     }
 
     private static void agregarSubasta() {
@@ -291,7 +297,8 @@ public class ClienteSubastas {
         System.out.println("Introduce la duración en segundos:");
         int duracion = scanner.nextInt();
 
-        out.println("ADD:" + titulo  + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Cuadro antiguo:100.0:120
+        out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Cuadro
+                                                                             // antiguo:100.0:120
 
         try {
             String respuesta = in.readLine();
