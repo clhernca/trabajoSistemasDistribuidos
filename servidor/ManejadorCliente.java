@@ -57,8 +57,8 @@ public class ManejadorCliente implements Runnable {
                     if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
                         // Registro exitoso, automáticamente lo logueamos
                         //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
-                        usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0),
-                                mensajeAut.getParametro(1));
+                        //usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0),
+                                //mensajeAut.getParametro(1));
                         out.println("REGISTER_OK");
                         autenticado = true;
                     } else {
@@ -97,6 +97,7 @@ public class ManejadorCliente implements Runnable {
 
         if (registrado) {
             System.out.println("[SERVIDOR] Nuevo usuario registrado: " + usuario);
+            usuarioActual = gestorUsuarios.login(usuario, contrasena);
         }
 
         return registrado;
