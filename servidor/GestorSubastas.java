@@ -36,7 +36,7 @@ public class GestorSubastas {
 
     }
 
-    public boolean procesarPuja(int id, String usuario, double cantidad) {
+    public synchronized boolean procesarPuja(int id, String usuario, double cantidad) {
         Subasta subasta = buscarSubasta(id);
         if (subasta == null) {
             return false;
