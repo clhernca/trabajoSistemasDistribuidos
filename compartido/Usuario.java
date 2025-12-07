@@ -141,4 +141,5 @@ public class Usuario implements java.io.Serializable {
         return nombre + " (€" + String.format("%.2f", saldo) + ") - " +
                subastasGanadas + " subastas ganadas";
     }
+
 }

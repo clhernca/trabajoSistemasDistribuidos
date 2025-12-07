@@ -29,6 +29,17 @@ public class Subasta implements java.io.Serializable {
         this.precioFinal = 0;
     }
 
+    public Subasta(int id, String titulo, double precioInicial, int duracion) {
+        this.id = id;
+        this.titulo = titulo;  
+        this.precioActual = precioInicial;
+        this.pujadorLider = "Ninguno";
+        this.activa = true;
+        this.tiempoFinal = System.currentTimeMillis() + (duracion * 1000); // duracion en segundos
+        this.ganador = null;
+        this.precioFinal = 0;
+    }
+
     public synchronized boolean pujar(String usuario, double cantidad) {
         if (!activa) {
             return false;

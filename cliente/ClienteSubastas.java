@@ -132,19 +132,17 @@ public class ClienteSubastas {
                     String nuevoLider = partes[2];
                     String nuevoPrecio = partes[3];
 
-                    System.out.println("[NOTIF] Has sido adelantado en la subasta "
+                    System.out.println("\n[NOTIF] Has sido adelantado en la subasta "
                             + idSubasta + " por " + nuevoLider + " con una puja de " + nuevoPrecio + "€");
-                    System.out.print("Opción: ");
 
                 } else if (partes[0].equals("NOTIF_GANADOR")) {
                     String idSubasta = partes[1];
                     String tituloSubasta = partes[2];
                     String precioFinal = partes[3];
 
-                    System.out.println("[NOTIF] Has ganado la subasta '"
+                    System.out.println("\n[NOTIF] Has ganado la subasta '"
                             + tituloSubasta + "' (ID " + idSubasta + ") con un precio final de "
                             + precioFinal + "€");
-                    System.out.print("Opción: ");
 
                 }
             }
@@ -284,15 +282,15 @@ public class ClienteSubastas {
 
     private static void agregarSubasta() {
         System.out.println("Introduce el título de la subasta:");
+        scanner.nextLine(); // Consumir el salto de línea pendiente
         String titulo = scanner.nextLine();
-        System.out.println("Introduce la descripción de la subasta:");
-        String descripcion = scanner.nextLine();
+
         System.out.println("Introduce el precio inicial:");
         double precioInicial = scanner.nextDouble();
         System.out.println("Introduce la duración en segundos:");
         int duracion = scanner.nextInt();
 
-        out.println("ADD:" + titulo + ":" + descripcion + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Subasta1:Descripción1:100.0:60
+        out.println("ADD:" + titulo  + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Cuadro antiguo:100.0:120
 
         try {
             String respuesta = in.readLine();

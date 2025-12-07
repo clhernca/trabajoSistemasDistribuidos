@@ -159,6 +159,16 @@ public class ManejadorCliente implements Runnable {
                 consultar(mensaje.getParametro(0));
                 break;
 
+            case "ADD":
+                System.out.println("[" + usuarioActual.getNombre() + "] Pidió agregar una subasta");
+                manejarAgregarSubasta(mensaje);
+                break;
+
+            case "DEP":
+                System.out.println("[" + usuarioActual.getNombre() + "] Pidió ingresar dinero");
+                manejarIngreso(mensaje);
+                break;
+
             case "SALIR":
                 System.out.println("[" + usuarioActual.getNombre() + "] Terminó");
                 conexion = false;
@@ -167,6 +177,38 @@ public class ManejadorCliente implements Runnable {
             default:
                 out.println("ERROR:Comando desconocido: " + comando);
         }
+    }
+
+    private void manejarIngreso(Mensaje mensaje) {
+        double cantidad = mensaje.getParametroDouble(0);
+        if (cantidad <= 0) {
+            out.println("DEP_ERROR:Cantidad inválida");
+            return;
+        }
+        usuarioActual.sumarSaldo(cantidad);
+        System.out.println("[" + usuarioActual.getNombre() + "] Ingresó €" + String.format("%.2f", cantidad)
+                + " | Nuevo saldo: €" + String.format("%.2f", usuarioActual.getSaldo()));
+        out.println("DEP_OK:"+  String.format("%.2f", usuarioActual.getSaldo()));
+    }
+
+    private void manejarAgregarSubasta(Mensaje mensaje) {
+        String titulo = mensaje.getParametro(0);
+        double precioInicial = mensaje.getParametroDouble(1);
+        int duracion = mensaje.getParametroInt(2); // en segundos
+
+        if (titulo == null || precioInicial == -1.0) {
+            out.println("ADD_ERROR:Parámetros inválidos");
+            return;
+        }
+
+        int nuevoId = gestorSubastas.obtenerSubastas().size() + 1; // Asigna un ID incremental
+        Subasta nuevaSubasta = new Subasta(nuevoId, titulo, precioInicial, duracion);
+        gestorSubastas.agregarSubasta(nuevaSubasta);
+
+        System.out.println("[" + usuarioActual.getNombre() + "] Agregó nueva subasta: #" + nuevoId + " - " + titulo
+                + " (Precio inicial: €" + String.format("%.2f", precioInicial) + ")");
+
+        out.println("ADD_OK:" + nuevoId);
     }
 
     private void manejarPuja(Mensaje mensaje) {

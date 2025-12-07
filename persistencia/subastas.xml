@@ -50,4 +50,24 @@
         <tiempoFinal>1765129333168</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
     </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>6</id>
+        <precioActual>100.0</precioActual>
+        <precioFinal>100.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765130972283</tiempoFinal>
+        <titulo>subrayador</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>7</id>
+        <precioActual>1200.0</precioActual>
+        <precioFinal>1200.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765131458959</tiempoFinal>
+        <titulo>NUEVA SUBASTA</titulo>
+    </subasta>
 </subastas>

@@ -9,10 +9,23 @@
     </usuario>
     <usuario>
         <contraseña>pass123</contraseña>
-        <historialPujas/>
+        <historialPujas>
+            <puja>
+                <usuario>alice</usuario>
+                <idSubasta>6</idSubasta>
+                <cantidad>100.0</cantidad>
+                <timestamp>1765130887691</timestamp>
+            </puja>
+            <puja>
+                <usuario>alice</usuario>
+                <idSubasta>7</idSubasta>
+                <cantidad>1200.0</cantidad>
+                <timestamp>1765131389652</timestamp>
+            </puja>
+        </historialPujas>
         <nombre>alice</nombre>
-        <saldo>500.0</saldo>
-        <subastasGanadas>0</subastasGanadas>
+        <saldo>200.0</saldo>
+        <subastasGanadas>1</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass789</contraseña>
