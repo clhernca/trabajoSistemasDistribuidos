@@ -257,8 +257,9 @@ public class ClienteSubastas {
             case 8:
                 salir();
                 break;
-            default: // Hecho automáticamente no sé
-                throw new AssertionError();
+            default: 
+                System.out.println("Opción inválida. Inténtalo de nuevo.");
+                break;
         }
     }
 
