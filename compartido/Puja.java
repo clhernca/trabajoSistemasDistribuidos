@@ -26,7 +26,7 @@ public class Puja {
         this.timestamp = System.currentTimeMillis();
     }
 
-     public String getUsuario() {
+    public String getUsuario() {
         return usuario;
     }
 
@@ -38,14 +38,14 @@ public class Puja {
         return timestamp;
     }
 
-    public int getIdSubasta(){
+    public int getIdSubasta() {
         return this.idSubasta;
     }
 
     public String getFechaFormato() {
         LocalDateTime dateTime = java.time.Instant.ofEpochMilli(timestamp)
                 .atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
-        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        return dateTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
     }
 
     public String toString() {
