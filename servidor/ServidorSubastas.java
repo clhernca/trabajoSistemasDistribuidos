@@ -16,15 +16,17 @@ public class ServidorSubastas {
     // private static final int NUM_HILOS = 10;
 
     private ServerSocket servidor;
-    private ExecutorService pool;
+    private static ExecutorService pool; // static para que el main pueda acceder
     private GestorSubastas gestorSubastas;
     private GestorUsuarios gestorUsuarios;
+    private GestorNotificaciones gestorNotificaciones;
 
     public ServidorSubastas() throws IOException {
         this.servidor = new ServerSocket(PUERTO);
-        this.pool = Executors.newCachedThreadPool();
+        pool = Executors.newCachedThreadPool();
         this.gestorSubastas = new GestorSubastas();
         this.gestorUsuarios = new GestorUsuarios();
+        this.gestorNotificaciones = new GestorNotificaciones();
     }
 
     public static void main(String[] args) {
@@ -36,6 +38,9 @@ public class ServidorSubastas {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            System.out.println("[SERVIDOR] Servidor detenido.");
+            pool.shutdown();
         }
     }
 
@@ -58,7 +63,7 @@ public class ServidorSubastas {
                 System.out.println("Nuevo cliente conectado desde: " + cliente.getInetAddress());
 
                 // Asignar cliente a un hilo del pool
-                pool.execute(new ManejadorCliente(cliente, gestorSubastas, gestorUsuarios));
+                pool.execute(new ManejadorCliente(cliente, gestorSubastas, gestorUsuarios, gestorNotificaciones));
 
             } catch (IOException e) {
                 System.err.println("Error al aceptar cliente: " + e.getMessage());
@@ -89,6 +94,11 @@ public class ServidorSubastas {
 
                                 // Registrar victoria del usuario
                                 if (s.getGanador() != null && !s.getGanador().equals("Ninguno")) {
+                                    gestorNotificaciones.notificarSubastaTerminada(
+                                            s.getGanador(),
+                                            s.getId(),
+                                            s.getTitulo(),
+                                            s.getPrecioFinal());
                                     Usuario ganadorUser = gestorUsuarios.obtenerUsuario(s.getGanador());
                                     if (ganadorUser != null) {
                                         ganadorUser.confirmarGasto(s.getPrecioFinal());

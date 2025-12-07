@@ -24,6 +24,8 @@ public class ClienteSubastas {
     private static boolean conexion;
     // Private static float saldo; ?????
 
+    private static Thread hiloNotificaciones;
+
     public static void main(String[] args) {
         try {
             socket = new Socket(HOST, PUERTO);
@@ -63,12 +65,94 @@ public class ClienteSubastas {
             }
             conexion = true;
             while (conexion) {
+                iniciarHiloNotificaciones();
+
                 mostrarMenu();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            cerrarConexion();
         }
+    }
+
+    private static void cerrarConexion() {
+        try {
+            conexion = false;
+            if (hiloNotificaciones != null) {
+                hiloNotificaciones.interrupt();
+            }
+            if (out != null)
+                out.close();
+            if (in != null)
+                in.close();
+            if (socket != null)
+                socket.close();
+            scanner.close();
+            System.out.println("\nConexión cerrada. ¡Hasta pronto!");
+        } catch (Exception e) {
+            System.err.println("Error al cerrar conexión: " + e.getMessage());
+        }
+    }
+
+    private static void iniciarHiloNotificaciones() {
+        hiloNotificaciones = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (conexion) {
+                        if (in.ready()) { // Comprueba si hay datos disponibles
+                            String linea = in.readLine();
+                            if (linea == null) {
+                                break; // Conexión cerrada
+                            }
+                            if (linea.startsWith("NOTIF_")) {
+                                procesarNotificacion(linea);
+                            }
+                            Thread.sleep(100); // Pequeña pausa para evitar uso excesivo de CPU
+
+                        }
+                    }
+                } catch (IOException e) {
+                    if (conexion) {
+                        System.err.println("\nError en hilo de notificaciones: " + e.getMessage());
+                    }
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            private void procesarNotificacion(String notificacion) {
+                String[] partes = notificacion.split(":");
+
+                if (partes[0].equals("NOTIF_ADELANTADO")) {
+                    String idSubasta = partes[1];
+                    String nuevoLider = partes[2];
+                    String nuevoPrecio = partes[3];
+
+                    System.out.println("[NOTIFICACIÓN] Has sido adelantado en la subasta "
+                            + idSubasta + " por " + nuevoLider + " con una puja de " + nuevoPrecio + "€");
+                    System.out.print("Opción: ");
+
+                } else if (partes[0].equals("NOTIF_GANADOR")) {
+                    String idSubasta = partes[1];
+                    String tituloSubasta = partes[2];
+                    String precioFinal = partes[3];
+
+                    System.out.println("[NOTIFICACIÓN] Has ganado la subasta '"
+                            + tituloSubasta + "' (ID " + idSubasta + ") con un precio final de "
+                            + precioFinal + "€");
+                    System.out.print("Opción: ");
+
+                }
+            }
+        });
+        hiloNotificaciones.setDaemon(true);
+        hiloNotificaciones.start();
+        System.out.println("\nSistema de notificaciones activado");
+
     }
 
     private static boolean registro() {
@@ -123,9 +207,9 @@ public class ClienteSubastas {
                 System.out.println("ME HE LOGEADO BIENN");
                 return true;
             } else if (respuesta.startsWith("LOGIN_ERROR:")) {
-            String error = respuesta.substring(12);
-            System.out.println("✗ " + error);
-            return false;
+                String error = respuesta.substring(12);
+                System.out.println("✗ " + error);
+                return false;
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -137,14 +221,14 @@ public class ClienteSubastas {
     }
 
     private static void mostrarMenu() {
-        System.out.println("======= MENÚ =======");
-        System.out.println("1. Listar subastas");
-        System.out.println("2. Informacion sobre una subasta concreta");
-        System.out.println("3. Pujar");
+        System.out.println("\n=== MENÚ PRINCIPAL ===");
+        System.out.println("1. Listar subastas activas");
+        System.out.println("2. Ver información de subasta");
+        System.out.println("3. Realizar puja");
         System.out.println("4. Consultar saldo");
-        System.out.println("5. Consultar historial");
+        System.out.println("5. Ver historial de pujas");
         System.out.println("6. Salir");
-        
+
         System.out.print("Opción: ");
 
         int opcion = scanner.nextInt();
@@ -214,7 +298,7 @@ public class ClienteSubastas {
 
     private static void infoSubasta() {
         System.out.println("Elige una subasta entre las disponibles:");
-        int idSubasta = scanner.nextInt(); //Manejar si no mete un int?
+        int idSubasta = scanner.nextInt(); // Manejar si no mete un int?
         out.println("INFO:" + idSubasta);
         try {
             System.out.println(in.readLine());
@@ -248,36 +332,36 @@ public class ClienteSubastas {
         }
     }
 
-    private static void consultarHistorial(){
-    out.println("CONSULT:history");
-    try {
-        String respuesta = in.readLine();
-        if (respuesta.startsWith("HISTORIAL:")) {
-            String historial = respuesta.substring(10);
-            historial = historial.replace("{{NL}}", "\n");
-            System.out.println(historial);
-        } else {
-            System.out.println("Error al consultar historial");
+    private static void consultarHistorial() {
+        out.println("CONSULT:history");
+        try {
+            String respuesta = in.readLine();
+            if (respuesta.startsWith("HISTORIAL:")) {
+                String historial = respuesta.substring(10);
+                historial = historial.replace("{{NL}}", "\n");
+                System.out.println(historial);
+            } else {
+                System.out.println("Error al consultar historial");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
 
-private static void consultarSaldo(){
-    out.println("CONSULT:credit");
-    try {
-        String respuesta = in.readLine();
-        if (respuesta.startsWith("SALDO:")) {
-            String mensaje = respuesta.substring(6);
-            System.out.println("\n " + mensaje);
-        } else {
-            System.out.println("Error al consultar saldo");
+    private static void consultarSaldo() {
+        out.println("CONSULT:credit");
+        try {
+            String respuesta = in.readLine();
+            if (respuesta.startsWith("SALDO:")) {
+                String mensaje = respuesta.substring(6);
+                System.out.println("\n " + mensaje);
+            } else {
+                System.out.println("Error al consultar saldo");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
 
     private static void salir() {
         out.println("SALIR");

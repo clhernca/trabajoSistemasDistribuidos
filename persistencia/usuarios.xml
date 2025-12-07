@@ -1,38 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <usuarios>
     <usuario>
-        <contraseña>pass456</contraseña>
+        <contraseña>c</contraseña>
         <historialPujas>
             <puja>
-                <usuario>bob</usuario>
+                <usuario>clara</usuario>
                 <idSubasta>1</idSubasta>
-                <cantidad>350.0</cantidad>
-                <timestamp>1765120522832</timestamp>
+                <cantidad>450.0</cantidad>
+                <timestamp>1765124661445</timestamp>
             </puja>
         </historialPujas>
-        <nombre>bob</nombre>
-        <saldo>400.0</saldo>
+        <nombre>clara</nombre>
+        <saldo>1000.0</saldo>
         <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
-        <contraseña>xxx</contraseña>
-        <historialPujas>
-            <puja>
-                <usuario>manuel</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>350.0</cantidad>
-                <timestamp>1765120408965</timestamp>
-            </puja>
-            <puja>
-                <usuario>manuel</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>400.0</cantidad>
-                <timestamp>1765120538292</timestamp>
-            </puja>
-        </historialPujas>
-        <nombre>manuel</nombre>
-        <saldo>250.0</saldo>
-        <subastasGanadas>1</subastasGanadas>
+        <contraseña>pass456</contraseña>
+        <historialPujas/>
+        <nombre>bob</nombre>
+        <saldo>400.0</saldo>
+        <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass123</contraseña>
@@ -41,23 +28,11 @@
                 <usuario>alice</usuario>
                 <idSubasta>1</idSubasta>
                 <cantidad>400.0</cantidad>
-                <timestamp>1765110399223</timestamp>
-            </puja>
-            <puja>
-                <usuario>alice</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>400.0</cantidad>
-                <timestamp>1765119665040</timestamp>
-            </puja>
-            <puja>
-                <usuario>alice</usuario>
-                <idSubasta>1</idSubasta>
-                <cantidad>400.0</cantidad>
-                <timestamp>1765120291419</timestamp>
+                <timestamp>1765124643269</timestamp>
             </puja>
         </historialPujas>
         <nombre>alice</nombre>
-        <saldo>100.0</saldo>
+        <saldo>500.0</saldo>
         <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
