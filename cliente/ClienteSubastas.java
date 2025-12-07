@@ -33,12 +33,12 @@ public class ClienteSubastas {
             out = new PrintWriter(socket.getOutputStream(), true);
             scanner = new Scanner(System.in);
 
-            System.out.println("SIUUU!! Conectado al server en " + HOST + ":" + PUERTO);
+            System.out.println("[CLIENT] Conectado al server en " + HOST + ":" + PUERTO);
 
             boolean autenticado = false;
             while (!autenticado) {
                 System.out.println("======= BIENVENIDO =======");
-                System.out.println("1. Eres nuevo? Regístrate!");
+                System.out.println("1. Registrarse");
                 System.out.println("2. Iniciar sesión");
                 System.out.println("3. Salir");
                 System.out.print("Opción: ");
@@ -54,18 +54,18 @@ public class ClienteSubastas {
                         autenticado = login();
                         break;
                     case 3:
-                        System.out.println("Hasta luego!");
-                        socket.close();
-                        break;
+                        System.out.println("[CLIENT] Saliendo...");
+                        return;
 
                     default: // Hecho automáticamente no sé
-                        System.out.println("Opción inválida");
+                        System.out.println("Opción inválida. Vuelve a intentarlo.");
                         break;
                 }
             }
             conexion = true;
+            iniciarHiloNotificaciones(); // Cambiar del while a aquí, para que solo se inicie una vez
+
             while (conexion) {
-                iniciarHiloNotificaciones();
 
                 mostrarMenu();
             }
@@ -90,9 +90,9 @@ public class ClienteSubastas {
             if (socket != null)
                 socket.close();
             scanner.close();
-            System.out.println("\nConexión cerrada. ¡Hasta pronto!");
+            System.out.println("[CLIENT] Conexión cerrada.");
         } catch (Exception e) {
-            System.err.println("Error al cerrar conexión: " + e.getMessage());
+            System.err.println("[CLIENT] Error al cerrar conexión: " + e.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class ClienteSubastas {
                     }
                 } catch (IOException e) {
                     if (conexion) {
-                        System.err.println("\nError en hilo de notificaciones: " + e.getMessage());
+                        System.err.println("[NOTIF] Error en hilo de notificaciones: " + e.getMessage());
                     }
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
@@ -132,7 +132,7 @@ public class ClienteSubastas {
                     String nuevoLider = partes[2];
                     String nuevoPrecio = partes[3];
 
-                    System.out.println("[NOTIFICACIÓN] Has sido adelantado en la subasta "
+                    System.out.println("[NOTIF] Has sido adelantado en la subasta "
                             + idSubasta + " por " + nuevoLider + " con una puja de " + nuevoPrecio + "€");
                     System.out.print("Opción: ");
 
@@ -141,7 +141,7 @@ public class ClienteSubastas {
                     String tituloSubasta = partes[2];
                     String precioFinal = partes[3];
 
-                    System.out.println("[NOTIFICACIÓN] Has ganado la subasta '"
+                    System.out.println("[NOTIF] Has ganado la subasta '"
                             + tituloSubasta + "' (ID " + idSubasta + ") con un precio final de "
                             + precioFinal + "€");
                     System.out.print("Opción: ");
@@ -151,7 +151,7 @@ public class ClienteSubastas {
         });
         hiloNotificaciones.setDaemon(true);
         hiloNotificaciones.start();
-        System.out.println("\nSistema de notificaciones activado");
+        System.out.println("[NOTIF] Sistema de notificaciones activado");
 
     }
 
@@ -168,7 +168,7 @@ public class ClienteSubastas {
 
         // Validación local
         if (!password.equals(passwordConfirm)) {
-            System.out.println("Las contraseñas no coinciden");
+            System.out.println("[CLIENT] Las contraseñas no coinciden");
             return false;
         }
 

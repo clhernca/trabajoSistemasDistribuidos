@@ -109,9 +109,9 @@ public class ManejadorCliente implements Runnable {
                 in.close();
             if (socket != null && !socket.isClosed())
                 socket.close();
-            System.out.println("Conexión cerrada");
+            System.out.println("[MANEJADOR] Conexión cerrada");
         } catch (Exception e) {
-            System.err.println("Error al cerrar conexión: " + e.getMessage());
+            System.err.println("[MANEJADOR] Error al cerrar conexión: " + e.getMessage());
         }
     }
 
