@@ -2,12 +2,12 @@
 <subastas>
     <subasta>
         <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <ganador>alice</ganador>
         <id>1</id>
-        <precioActual>150.0</precioActual>
-        <precioFinal>150.0</precioFinal>
-        <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765200127576</tiempoFinal>
+        <precioActual>300.0</precioActual>
+        <precioFinal>300.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>Laptop Dell XPS</titulo>
     </subasta>
     <subasta>
@@ -17,7 +17,7 @@
         <precioActual>200.0</precioActual>
         <precioFinal>200.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765200127576</tiempoFinal>
+        <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>iPhone 15 Pro</titulo>
     </subasta>
     <subasta>
@@ -27,7 +27,7 @@
         <precioActual>300.0</precioActual>
         <precioFinal>300.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765200127576</tiempoFinal>
+        <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>PlayStation 5</titulo>
     </subasta>
     <subasta>
@@ -37,7 +37,7 @@
         <precioActual>75.0</precioActual>
         <precioFinal>75.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765200127576</tiempoFinal>
+        <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>AirPods Pro</titulo>
     </subasta>
     <subasta>
@@ -47,17 +47,127 @@
         <precioActual>250.0</precioActual>
         <precioFinal>250.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765200127576</tiempoFinal>
+        <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
     </subasta>
     <subasta>
         <activa>false</activa>
         <ganador>alice</ganador>
         <id>6</id>
-        <precioActual>120.0</precioActual>
-        <precioFinal>120.0</precioFinal>
+        <precioActual>200.0</precioActual>
+        <precioFinal>200.0</precioFinal>
         <pujadorLider>alice</pujadorLider>
-        <tiempoFinal>1765200186000</tiempoFinal>
-        <titulo>sub</titulo>
+        <tiempoFinal>1765195354458</tiempoFinal>
+        <titulo>Raton inalambrico</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>7</id>
+        <precioActual>250.0</precioActual>
+        <precioFinal>250.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765195510952</tiempoFinal>
+        <titulo>cartera</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>8</id>
+        <precioActual>700.0</precioActual>
+        <precioFinal>700.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765196272708</tiempoFinal>
+        <titulo>hola</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>9</id>
+        <precioActual>11640.0</precioActual>
+        <precioFinal>11640.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765195952106</tiempoFinal>
+        <titulo>pila</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>10</id>
+        <precioActual>5.0</precioActual>
+        <precioFinal>5.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765195985089</tiempoFinal>
+        <titulo>hola</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>charlie</ganador>
+        <id>11</id>
+        <precioActual>130.0</precioActual>
+        <precioFinal>130.0</precioFinal>
+        <pujadorLider>charlie</pujadorLider>
+        <tiempoFinal>1765196878440</tiempoFinal>
+        <titulo>cartera</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>bob</ganador>
+        <id>12</id>
+        <precioActual>160.0</precioActual>
+        <precioFinal>160.0</precioFinal>
+        <pujadorLider>bob</pujadorLider>
+        <tiempoFinal>1765196445973</tiempoFinal>
+        <titulo>lampara</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>charlie</ganador>
+        <id>13</id>
+        <precioActual>200.0</precioActual>
+        <precioFinal>200.0</precioFinal>
+        <pujadorLider>charlie</pujadorLider>
+        <tiempoFinal>1765196862154</tiempoFinal>
+        <titulo>mesa</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>bob</ganador>
+        <id>14</id>
+        <precioActual>60.0</precioActual>
+        <precioFinal>60.0</precioFinal>
+        <pujadorLider>bob</pujadorLider>
+        <tiempoFinal>1765197033301</tiempoFinal>
+        <titulo>raton</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>Ninguno</ganador>
+        <id>15</id>
+        <precioActual>4.0</precioActual>
+        <precioFinal>4.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765197414765</tiempoFinal>
+        <titulo>hola</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>16</id>
+        <precioActual>3.0</precioActual>
+        <precioFinal>3.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765198726512</tiempoFinal>
+        <titulo>llaves</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>17</id>
+        <precioActual>40.5</precioActual>
+        <precioFinal>40.5</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765198994208</tiempoFinal>
+        <titulo>mesilla</titulo>
     </subasta>
 </subastas>

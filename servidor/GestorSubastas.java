@@ -52,7 +52,7 @@ public class GestorSubastas {
             }
         }
 
-        // Eliminar último separador
+        
         if (sb.length() > 0) {
             sb.deleteCharAt(sb.length() - 1);
         }
@@ -70,12 +70,12 @@ public class GestorSubastas {
         }
     }
 
-    public List<Subasta> verificarSubastasFinalizadas() { // Devuelve las subastas finalizadas 
+    public List<Subasta> verificarSubastasFinalizadas() {
         List<Subasta> finalizadas = new ArrayList<>();
         synchronized (subastas) {
             for (Subasta s : subastas) {
-                if (s.isActiva() && !s.estaActiva()) { // Si está activa pero ya ha pasado el tiempo
-                    s.cerrar(s.getPujadorLider()); // La cierra y registra el ganador y precio final
+                if (s.isActiva() && !s.estaActiva()) {
+                    s.cerrar(s.getPujadorLider());
                     finalizadas.add(s);
                 }
             }

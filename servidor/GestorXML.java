@@ -13,7 +13,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "subastas")
-class SubastasXML { // Lo hace asi para no mezclar logica de negocio con persistencia
+class SubastasXML { // Para no mezclar logica de negocio con persistencia
     @XmlElement(name = "subasta")
     public List<Subasta> subastas = new ArrayList<>();
 }
@@ -50,12 +50,12 @@ public class GestorXML {
             File archivo = new File(ARCHIVO_SUBASTAS);
             File directorio = archivo.getParentFile();
             if (directorio != null && !directorio.exists()) {
-                directorio.mkdirs(); // Crea el directorio 'persistencia' si no existe
+                directorio.mkdirs();
             }
 
             if (!archivo.exists()) {
                 System.out.println("[XML] No se encontró el archivo de subastas. Se cargarán subastas vacías.");
-                return new ArrayList<>(); // Devuelve lista vacía si no existe el archivo
+                return new ArrayList<>();
             }
 
             JAXBContext context = JAXBContext.newInstance(SubastasXML.class);
@@ -63,18 +63,18 @@ public class GestorXML {
             SubastasXML wrapper = (SubastasXML) unmarshaller.unmarshal(archivo);
 
             System.out.println("[XML] Se cargaron " + wrapper.subastas.size() + " subastas");
-            return wrapper.subastas; // Devuelve la lista de subastas cargadas
+            return wrapper.subastas;
 
         } catch (JAXBException e) {
             System.err.println("[ERROR XML] No se pudieron cargar subastas: " + e.getMessage());
-            return new ArrayList<>(); // Devuelve lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 
     public static void guardarUsuarios(Collection<Usuario> usuarios) {
         try {
             UsuariosXML wrapper = new UsuariosXML();
-            wrapper.usuarios = new ArrayList<>(usuarios); // Metes todos los usuarios en el contenedor
+            wrapper.usuarios = new ArrayList<>(usuarios);
 
             JAXBContext context = JAXBContext.newInstance(UsuariosXML.class);
             Marshaller marshaller = context.createMarshaller();
@@ -93,23 +93,22 @@ public class GestorXML {
             
             File directorio = archivo.getParentFile();
             if (directorio != null && !directorio.exists()) {
-                directorio.mkdirs(); // Crea el directorio 'persistencia' si no existe
+                directorio.mkdirs();
             }
 
             if (!archivo.exists()) {
                 System.out.println("[XML] No hay archivo de usuarios. Usando estado en memoria.");
-                return new ArrayList<>(); // Devuelve lista vacía si no existe el archivo
-            }
+                return new ArrayList<>();
 
             JAXBContext context = JAXBContext.newInstance(UsuariosXML.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             UsuariosXML wrapper = (UsuariosXML) unmarshaller.unmarshal(archivo);
 
             System.out.println("[XML] Se cargaron " + wrapper.usuarios.size() + " usuarios");
-            return wrapper.usuarios; // Devuelve la lista de usuarios cargados
+            return wrapper.usuarios;
         } catch (JAXBException e) {
             System.err.println("[ERROR XML] No se pudieron cargar usuarios: " + e.getMessage());
-            return new ArrayList<>(); // Devuelve lista vacía en caso de error
+            return new ArrayList<>();
         }
     }
 }

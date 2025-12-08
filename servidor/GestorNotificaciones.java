@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class GestorNotificaciones {
 
-    private Map<String, PrintWriter> clientesConectados; // Registra los clientes conectados por su nombre y su flujo de
-                                                         // salida (para escribir)
+    private Map<String, PrintWriter> clientesConectados;
+                                                         
 
     public GestorNotificaciones() {
         this.clientesConectados = new ConcurrentHashMap<>();
@@ -28,14 +28,14 @@ public class GestorNotificaciones {
         if (writer != null) {
             try {
                 String mensaje = String.format("NOTIF_ADELANTADO:%d:%s:%.2f",
-                        idSubasta, nuevoLider, nuevoPrecio); // Formato del mensaje:
-                                                             // NOTIF_ADELANTADO:idSubasta:nuevoLider:nuevoPrecio
+                        idSubasta, nuevoLider, nuevoPrecio);
+                                                             
                 writer.println(mensaje);
                 writer.flush();
                 System.out.println("[NOTIF] Notificación enviada a " + usuarioAnterior + ": " + mensaje);
             } catch (Exception e) {
                 System.err.println("[NOTIF] Error al enviar notificación a " + usuarioAnterior + ": " + e.getMessage());
-                desregistrarCliente(usuarioAnterior); // Desregistrar si hay error
+                desregistrarCliente(usuarioAnterior);
             }
         }
     }
@@ -45,8 +45,8 @@ public class GestorNotificaciones {
         if (writer != null) {
             try {
                 String mensaje = String.format("NOTIF_GANADOR:%d:%s:%.2f",
-                        idSubasta, tituloSubasta, precioFinal); // Formato del mensaje:
-                                                                // NOTIF_GANADOR:idSubasta:tituloSubasta:precioFinal
+                        idSubasta, tituloSubasta, precioFinal); 
+                                                               
                 writer.println(mensaje);
                 writer.flush();
                 System.out.println("[NOTIF] Notificación de victoria enviada a " + ganador + ": " + mensaje);
@@ -57,11 +57,11 @@ public class GestorNotificaciones {
         }
     }
 
-    public boolean estaConectado(String nombreUsuario) {    // Verifica si un usuario está conectado
+    public boolean estaConectado(String nombreUsuario) { 
         return clientesConectados.containsKey(nombreUsuario);
     }
 
-    public int getCantidadClientesConectados() {  // Devuelve la cantidad de clientes conectados
+    public int getCantidadClientesConectados() {
         return clientesConectados.size();
     }
 

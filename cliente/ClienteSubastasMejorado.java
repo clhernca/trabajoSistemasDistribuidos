@@ -1,6 +1,7 @@
 
 package cliente;
 
+import compartido.Mensaje;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,8 +10,6 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import compartido.Mensaje;
 
 public class ClienteSubastasMejorado {
 
@@ -28,7 +27,7 @@ public class ClienteSubastasMejorado {
     private static BlockingQueue<String> colaRespuestas = new LinkedBlockingQueue<>();
 
     private static Thread hiloLector;
-    private static final Object consoleLock = new Object(); // Necesario para sincronizar impresiones
+    private static final Object consoleLock = new Object(); // Para sincronizar impresiones, daba error si no
 
     public static void main(String[] args) {
         try {
@@ -39,7 +38,7 @@ public class ClienteSubastasMejorado {
 
             imprimirConsola("[CLIENT] Conectado al server en " + HOST + ":" + PUERTO);
 
-            // Iniciar hilo lector ANTES de autenticación
+            
             iniciarHiloLector();
 
             boolean autenticado = false;
@@ -111,8 +110,8 @@ public class ClienteSubastasMejorado {
     /**
      * Procesa notificaciones del servidor y las muestra inmediatamente
      */
-    private static void procesarNotificacion(String notificacion) { // NOTIF_ADELANTADO:idSubasta:nuevoLider:nuevoPrecio
-                                                                    // o NOTIF_GANADOR:idSubasta:titulo:precioFinal
+    private static void procesarNotificacion(String notificacion) {
+                                                                    
         Mensaje mensaje = Mensaje.parsear(notificacion);
         String comando = mensaje.getComando();
 
@@ -250,7 +249,7 @@ public class ClienteSubastasMejorado {
         System.out.print("Opción: ");
 
         int opcion = scanner.nextInt();
-        scanner.nextLine(); // Consumir newline
+        scanner.nextLine();
 
         switch (opcion) {
             case 1:
@@ -362,10 +361,10 @@ public class ClienteSubastasMejorado {
 
         out.println("INFO:" + idSubasta);
 
-        String respuesta = esperarRespuesta(); // INFO_OK:id:titulo:precioActual:pujador:tiempoRestante o
-                                               // INFO_ERROR:error
+        String respuesta = esperarRespuesta();
+                                               
         if (respuesta != null && respuesta.startsWith("INFO_OK:")) {
-            respuesta = respuesta.substring(8); // Quitar "INFO_OK:"
+            respuesta = respuesta.substring(8);
             String[] partes = respuesta.split("\\|");
 
             String id = partes[0];
@@ -409,7 +408,7 @@ public class ClienteSubastasMejorado {
 
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("SALDO:")) {
-            String datos = respuesta.substring(6); // Quitar "SALDO:"
+            String datos = respuesta.substring(6);
             String[] partes = datos.split(":");
 
             String saldoTotal = partes[0];
@@ -435,7 +434,7 @@ public class ClienteSubastasMejorado {
             imprimirConsola("\n[HISTORIAL] No has realizado ninguna puja todavía");
 
         } else if (respuesta != null && respuesta.startsWith("HISTORIAL:")) {
-            String datos = respuesta.substring(10); // Quitar "HISTORIAL:"
+            String datos = respuesta.substring(10);
             String[] pujas = datos.split(";");
 
             imprimirConsola("\n[HISTORIAL] Tus pujas:");

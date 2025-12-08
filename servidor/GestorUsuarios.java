@@ -15,7 +15,6 @@ public class GestorUsuarios {
         public void crearUsuario(String nombre, String contraseña, double saldoInicial) {
         if (!usuarios.containsKey(nombre)) {
             usuarios.put(nombre, new Usuario(nombre, contraseña, saldoInicial));
-            System.out.println("EN EL PUT CON " + nombre+contraseña+saldoInicial);
         }
     }
 
@@ -27,13 +26,10 @@ public class GestorUsuarios {
         Usuario nuevoUsuario = new Usuario(nombre, contrasena, 1000.0);
         agregarUsuario(nuevoUsuario);
         
-        // Guardar en el XML???????????
-        
         return true;
     }
 
     public Usuario login(String nombre, String contraseña) { 
-        System.out.println("FUNCION LOGIN DE GESTOR: PARAMETROS: " + nombre + contraseña);
         Usuario usuario = usuarios.get(nombre);
         if (usuario != null && usuario.getContraseña().equals(contraseña)) {
             return usuario;

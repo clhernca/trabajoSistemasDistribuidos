@@ -107,7 +107,6 @@ public class Usuario implements java.io.Serializable {
     }
 
     public synchronized void registrarPuja(Puja puja) {
-        System.out.println("AÑADO PUJA");
         historialPujas.add(puja);
     }
 
