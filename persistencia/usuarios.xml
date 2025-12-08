@@ -12,15 +12,9 @@
         <historialPujas>
             <puja>
                 <usuario>alice</usuario>
-                <idSubasta>6</idSubasta>
-                <cantidad>100.0</cantidad>
-                <timestamp>1765130887691</timestamp>
-            </puja>
-            <puja>
-                <usuario>alice</usuario>
-                <idSubasta>7</idSubasta>
-                <cantidad>1200.0</cantidad>
-                <timestamp>1765131389652</timestamp>
+                <idSubasta>1</idSubasta>
+                <cantidad>300.0</cantidad>
+                <timestamp>1765135244171</timestamp>
             </puja>
         </historialPujas>
         <nombre>alice</nombre>
