@@ -31,7 +31,7 @@
         </historialPujas>
         <nombre>alice</nombre>
         <saldo>950.0</saldo>
-        <subastasGanadas>2</subastasGanadas>
+        <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass789</contraseña>

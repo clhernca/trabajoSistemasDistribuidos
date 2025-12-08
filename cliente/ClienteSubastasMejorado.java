@@ -10,6 +10,8 @@ import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import compartido.Mensaje;
+
 public class ClienteSubastasMejorado {
 
     private static final String HOST = "localhost";
@@ -26,7 +28,7 @@ public class ClienteSubastasMejorado {
     private static BlockingQueue<String> colaRespuestas = new LinkedBlockingQueue<>();
 
     private static Thread hiloLector;
-    private static final Object consoleLock = new Object();
+    private static final Object consoleLock = new Object(); // Necesario para sincronizar impresiones
 
     public static void main(String[] args) {
         try {
@@ -90,10 +92,8 @@ public class ClienteSubastasMejorado {
                 String linea;
                 while ((linea = in.readLine()) != null) {
                     if (linea.startsWith("NOTIF_")) {
-                        // Notificación: mostrar inmediatamente
                         procesarNotificacion(linea);
                     } else {
-                        // Respuesta normal: añadir a cola para que el hilo principal la procese
                         colaRespuestas.offer(linea);
                     }
                 }
@@ -111,34 +111,26 @@ public class ClienteSubastasMejorado {
     /**
      * Procesa notificaciones del servidor y las muestra inmediatamente
      */
-    private static void procesarNotificacion(String notificacion) {
-        String[] partes = notificacion.split(":");
+    private static void procesarNotificacion(String notificacion) { // NOTIF_ADELANTADO:idSubasta:nuevoLider:nuevoPrecio
+                                                                    // o NOTIF_GANADOR:idSubasta:titulo:precioFinal
+        Mensaje mensaje = Mensaje.parsear(notificacion);
+        String comando = mensaje.getComando();
 
-        if (partes[0].equals("NOTIF_ADELANTADO")) {
-            String idSubasta = partes[1];
-            String nuevoLider = partes[2];
-            String nuevoPrecio = partes[3];
+        if (comando.equals("NOTIF_ADELANTADO")) {
+            String idSubasta = mensaje.getParametro(0);
+            String nuevoLider = mensaje.getParametro(1);
+            String nuevoPrecio = mensaje.getParametro(2);
 
-            imprimirConsola("\n╔════════════════════════════════════════╗");
-            imprimirConsola("║          ⚠️  NOTIFICACIÓN  ⚠️          ║");
-            imprimirConsola("╠════════════════════════════════════════╣");
-            imprimirConsola("  Has sido adelantado en subasta #" + idSubasta);
-            imprimirConsola("  Nuevo líder: " + nuevoLider);
-            imprimirConsola("  Nueva puja: " + nuevoPrecio + "€");
-            imprimirConsola("╚════════════════════════════════════════╝\n");
+            imprimirConsola("[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider +
+                    " con una puja de " + nuevoPrecio + "€");
 
-        } else if (partes[0].equals("NOTIF_GANADOR")) {
-            String idSubasta = partes[1];
-            String tituloSubasta = partes[2];
-            String precioFinal = partes[3];
+        } else if (comando.equals("NOTIF_GANADOR")) {
+            String idSubasta = mensaje.getParametro(0);
+            String tituloSubasta = mensaje.getParametro(1);
+            String precioFinal = mensaje.getParametro(2);
 
-            imprimirConsola("\n╔════════════════════════════════════════╗");
-            imprimirConsola("║          🎉  ¡FELICIDADES!  🎉         ║");
-            imprimirConsola("╠════════════════════════════════════════╣");
-            imprimirConsola("  Has ganado la subasta:");
-            imprimirConsola("  '" + tituloSubasta + "' (ID " + idSubasta + ")");
-            imprimirConsola("  Precio final: " + precioFinal + "€");
-            imprimirConsola("╚════════════════════════════════════════╝\n");
+            imprimirConsola("[NOTIFICACIÓN] Has ganado la subasta #" + idSubasta + " '" + tituloSubasta
+                    + "' con un precio final de " + precioFinal + "€");
         }
     }
 
@@ -191,7 +183,7 @@ public class ClienteSubastasMejorado {
         String usuario = scanner.nextLine();
 
         if (usuario.trim().isEmpty()) {
-            imprimirConsola("[CLIENT] El nombre de usuario no puede estar vacío.");
+            imprimirConsola("[CLIENT_ERROR] El nombre de usuario no puede estar vacío.");
             return false;
         }
 
@@ -202,7 +194,7 @@ public class ClienteSubastasMejorado {
         String passwordConfirm = scanner.nextLine();
 
         if (!password.equals(passwordConfirm)) {
-            imprimirConsola("[CLIENT] Las contraseñas no coinciden");
+            imprimirConsola("[CLIENT_ERROR] Las contraseñas no coinciden");
             return false;
         }
 
@@ -211,11 +203,11 @@ public class ClienteSubastasMejorado {
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("REGISTER_OK")) {
             nombreUsuario = usuario;
-            imprimirConsola("✓ Registrado correctamente! Bienvenido " + usuario);
+            imprimirConsola("[REGISTER_OK] Registrado correctamente! Bienvenido " + usuario);
             return true;
         } else if (respuesta != null && respuesta.startsWith("REGISTER_ERROR:")) {
             String error = respuesta.substring(15);
-            imprimirConsola("✗ " + error);
+            imprimirConsola("[REGISTER_ERROR] " + error);
             return false;
         }
 
@@ -233,11 +225,11 @@ public class ClienteSubastasMejorado {
 
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.equals("LOGIN_OK")) {
-            imprimirConsola("✓ Sesión iniciada correctamente");
+            imprimirConsola("[LOGIN_OK] Sesión iniciada correctamente");
             return true;
         } else if (respuesta != null && respuesta.startsWith("LOGIN_ERROR:")) {
             String error = respuesta.substring(12);
-            imprimirConsola("✗ " + error);
+            imprimirConsola("[LOGIN_ERROR] " + error);
             return false;
         }
 
@@ -286,7 +278,7 @@ public class ClienteSubastasMejorado {
                 salir();
                 break;
             default:
-                imprimirConsola("[CLIENT] Opción inválida");
+                imprimirConsola("[CLIENT_ERROR] Opción inválida");
         }
     }
 
@@ -300,10 +292,10 @@ public class ClienteSubastasMejorado {
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("DEP_OK:")) {
             String nuevoSaldo = respuesta.substring(7);
-            imprimirConsola("✓ Depósito realizado. Nuevo saldo: " + nuevoSaldo + "€");
+            imprimirConsola("[DEP_OK] Depósito realizado. Nuevo saldo: " + nuevoSaldo + "€");
         } else if (respuesta != null && respuesta.startsWith("DEP_ERROR:")) {
             String error = respuesta.substring(10);
-            imprimirConsola("✗ Error: " + error);
+            imprimirConsola("[DEP_ERROR] " + error);
         }
     }
 
@@ -323,10 +315,10 @@ public class ClienteSubastasMejorado {
 
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("ADD_OK")) {
-            imprimirConsola("✓ Subasta agregada correctamente");
+            imprimirConsola("[ADD_OK] Subasta agregada correctamente");
         } else if (respuesta != null && respuesta.startsWith("ADD_ERROR:")) {
             String error = respuesta.substring(10);
-            imprimirConsola("✗ Error: " + error);
+            imprimirConsola("[ADD_ERROR] " + error);
         }
     }
 
@@ -338,15 +330,13 @@ public class ClienteSubastasMejorado {
             return;
 
         if (respuesta.equals("LISTA_VACIA")) {
-            imprimirConsola("\n📋 No hay subastas disponibles");
+            imprimirConsola("[LIST_EMPTY] No hay subastas disponibles");
             return;
         } else if (respuesta.startsWith("LISTA:")) {
-            String listaSubastas = respuesta.substring(6);
+            String listaSubastas = respuesta.substring(6); // Quitar "LISTA:"
             String[] subastas = listaSubastas.split(";");
 
-            imprimirConsola("\n╔════════════════════════════════════════════════════════════╗");
-            imprimirConsola("║              SUBASTAS ACTIVAS                              ║");
-            imprimirConsola("╚════════════════════════════════════════════════════════════╝");
+            imprimirConsola("[LIST_OK] Subastas activas:");
 
             for (String subasta : subastas) {
                 String[] partes = subasta.split("\\|");
@@ -356,10 +346,10 @@ public class ClienteSubastasMejorado {
                 String pujador = partes[3];
                 String tiempoRestante = partes[4];
 
-                imprimirConsola("\n[#" + id + "] " + titulo);
-                imprimirConsola("  💰 Precio actual: " + precioActual + "€");
-                imprimirConsola("  👤 Pujador líder: " + pujador);
-                imprimirConsola("  ⏱️  Tiempo restante: " + tiempoRestante + "s");
+                imprimirConsola("\n#" + id + " " + titulo);
+                imprimirConsola("  Precio actual: " + precioActual + "€");
+                imprimirConsola("  Pujador líder: " + pujador);
+                imprimirConsola("  Tiempo restante: " + tiempoRestante + "s");
             }
             imprimirConsola("");
         }
@@ -372,9 +362,26 @@ public class ClienteSubastasMejorado {
 
         out.println("INFO:" + idSubasta);
 
-        String respuesta = esperarRespuesta();
-        if (respuesta != null) {
-            imprimirConsola("\n" + respuesta);
+        String respuesta = esperarRespuesta(); // INFO_OK:id:titulo:precioActual:pujador:tiempoRestante o
+                                               // INFO_ERROR:error
+        if (respuesta != null && respuesta.startsWith("INFO_OK:")) {
+            respuesta = respuesta.substring(8); // Quitar "INFO_OK:"
+            String[] partes = respuesta.split("\\|");
+
+            String id = partes[0];
+            String titulo = partes[1];
+            String precioActual = partes[2];
+            String pujador = partes[3];
+            String tiempoRestante = partes[4];
+
+            imprimirConsola("[INFO_OK] #" + id + " " + titulo);
+            imprimirConsola("  Precio actual: " + precioActual + "€");
+            imprimirConsola("  Pujador líder: " + pujador);
+            imprimirConsola("  Tiempo restante: " + tiempoRestante + "s");
+
+        } else if (respuesta != null && respuesta.startsWith("INFO_ERROR:")) {
+            String error = respuesta.substring(12);
+            imprimirConsola("[INFO_ERROR] " + error);
         }
     }
 

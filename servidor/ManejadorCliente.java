@@ -290,11 +290,11 @@ public class ManejadorCliente implements Runnable {
         Subasta subasta = gestorSubastas.buscarSubasta(idSubasta);
 
         if (subasta == null) {
-            out.println("ERROR:Subasta no encontrada");
+            out.println("INFO_ERROR: Subasta no encontrada");
             return;
         }
 
-        out.println("INFO:" + subasta.toString());
+        out.println("INFO_OK:" + subasta.toString());
     }
 
     private void consultar(String param) {
