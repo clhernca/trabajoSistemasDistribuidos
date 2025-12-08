@@ -3,7 +3,7 @@
     <usuario>
         <contraseña>pass456</contraseña>
         <historialPujas/>
-        <nombre>bob</nombre>
+        <nombre>carlos</nombre>
         <saldo>400.0</saldo>
         <subastasGanadas>0</subastasGanadas>
     </usuario>
@@ -11,26 +11,20 @@
         <contraseña>pass123</contraseña>
         <historialPujas>
             <puja>
-                <usuario>alice</usuario>
-                <idSubasta>6</idSubasta>
-                <cantidad>100.0</cantidad>
-                <timestamp>1765130887691</timestamp>
-            </puja>
-            <puja>
-                <usuario>alice</usuario>
-                <idSubasta>7</idSubasta>
-                <cantidad>1200.0</cantidad>
-                <timestamp>1765131389652</timestamp>
+                <usuario>ana</usuario>
+                <idSubasta>2</idSubasta>
+                <cantidad>300.0</cantidad>
+                <timestamp>1765209482851</timestamp>
             </puja>
         </historialPujas>
-        <nombre>alice</nombre>
+        <nombre>ana</nombre>
         <saldo>200.0</saldo>
-        <subastasGanadas>0</subastasGanadas>
+        <subastasGanadas>1</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass789</contraseña>
         <historialPujas/>
-        <nombre>charlie</nombre>
+        <nombre>lucia</nombre>
         <saldo>600.0</saldo>
         <subastasGanadas>0</subastasGanadas>
     </usuario>

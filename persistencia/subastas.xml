@@ -7,17 +7,17 @@
         <precioActual>150.0</precioActual>
         <precioFinal>150.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765129333168</tiempoFinal>
+        <tiempoFinal>1765209498731</tiempoFinal>
         <titulo>Laptop Dell XPS</titulo>
     </subasta>
     <subasta>
         <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <ganador>ana</ganador>
         <id>2</id>
-        <precioActual>200.0</precioActual>
-        <precioFinal>200.0</precioFinal>
-        <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765129333168</tiempoFinal>
+        <precioActual>300.0</precioActual>
+        <precioFinal>300.0</precioFinal>
+        <pujadorLider>ana</pujadorLider>
+        <tiempoFinal>1765209498731</tiempoFinal>
         <titulo>iPhone 15 Pro</titulo>
     </subasta>
     <subasta>
@@ -27,7 +27,7 @@
         <precioActual>300.0</precioActual>
         <precioFinal>300.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765129333168</tiempoFinal>
+        <tiempoFinal>1765209498731</tiempoFinal>
         <titulo>PlayStation 5</titulo>
     </subasta>
     <subasta>
@@ -37,7 +37,7 @@
         <precioActual>75.0</precioActual>
         <precioFinal>75.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765129333168</tiempoFinal>
+        <tiempoFinal>1765209498731</tiempoFinal>
         <titulo>AirPods Pro</titulo>
     </subasta>
     <subasta>
@@ -47,27 +47,7 @@
         <precioActual>250.0</precioActual>
         <precioFinal>250.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765129333168</tiempoFinal>
+        <tiempoFinal>1765209498731</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
-    </subasta>
-    <subasta>
-        <activa>false</activa>
-        <ganador>alice</ganador>
-        <id>6</id>
-        <precioActual>100.0</precioActual>
-        <precioFinal>100.0</precioFinal>
-        <pujadorLider>alice</pujadorLider>
-        <tiempoFinal>1765130972283</tiempoFinal>
-        <titulo>subrayador</titulo>
-    </subasta>
-    <subasta>
-        <activa>false</activa>
-        <ganador>alice</ganador>
-        <id>7</id>
-        <precioActual>1200.0</precioActual>
-        <precioFinal>1200.0</precioFinal>
-        <pujadorLider>alice</pujadorLider>
-        <tiempoFinal>1765131458959</tiempoFinal>
-        <titulo>NUEVA SUBASTA</titulo>
     </subasta>
 </subastas>

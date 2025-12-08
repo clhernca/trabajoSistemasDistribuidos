@@ -31,7 +31,7 @@ public class ManejadorCliente implements Runnable {
     public void run() {
 
         try {
-            // Crear streams de entrada/salida
+
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -58,10 +58,7 @@ public class ManejadorCliente implements Runnable {
 
                 } else if (comando.equals("REGISTER")) {
                     if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
-                        // Registro exitoso, automáticamente lo logueamos
-                        //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
-                        //usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0),
-                                //mensajeAut.getParametro(1));
+
                         out.println("REGISTER_OK");
                         autenticado = true;
                     } else {
@@ -73,7 +70,7 @@ public class ManejadorCliente implements Runnable {
                 }
             }
 
-            if (usuarioActual != null) { // Lo he puesto aqui, no se si está perfecto
+            if (usuarioActual != null) {
                 gestorNotificaciones.registrarCliente(usuarioActual.getNombre(), out);
             }
 
@@ -85,7 +82,7 @@ public class ManejadorCliente implements Runnable {
 
                 if (mensaje == null) {
                     out.println("ERROR:Mensaje inválido");
-                    continue; // Qué hace esto?
+                    continue;
                 }
 
                 procesarComando(mensaje);
@@ -188,20 +185,20 @@ public class ManejadorCliente implements Runnable {
         usuarioActual.sumarSaldo(cantidad);
         System.out.println("[" + usuarioActual.getNombre() + "] Ingresó €" + String.format("%.2f", cantidad)
                 + " | Nuevo saldo: €" + String.format("%.2f", usuarioActual.getSaldo()));
-        out.println("DEP_OK:"+  String.format("%.2f", usuarioActual.getSaldo()));
+        out.println("DEP_OK:" + String.format("%.2f", usuarioActual.getSaldo()));
     }
 
     private void manejarAgregarSubasta(Mensaje mensaje) {
         String titulo = mensaje.getParametro(0);
         double precioInicial = mensaje.getParametroDouble(1);
-        int duracion = mensaje.getParametroInt(2); // en segundos
+        int duracion = mensaje.getParametroInt(2);
 
         if (titulo == null || precioInicial == -1.0) {
             out.println("ADD_ERROR:Parámetros inválidos");
             return;
         }
 
-        int nuevoId = gestorSubastas.obtenerSubastas().size() + 1; // Asigna un ID incremental
+        int nuevoId = gestorSubastas.obtenerSubastas().size() + 1;
         Subasta nuevaSubasta = new Subasta(nuevoId, titulo, precioInicial, duracion);
         gestorSubastas.agregarSubasta(nuevaSubasta);
 
@@ -290,25 +287,48 @@ public class ManejadorCliente implements Runnable {
         Subasta subasta = gestorSubastas.buscarSubasta(idSubasta);
 
         if (subasta == null) {
-            out.println("ERROR:Subasta no encontrada");
+            out.println("INFO_ERROR: Subasta no encontrada");
             return;
         }
 
-        out.println("INFO:" + subasta.toString());
+        out.println("INFO_OK:" + subasta.toString());
     }
 
     private void consultar(String param) {
         if (param.equals("credit")) {
-            out.println("SALDO:Tu saldo total: €" + String.format("%.2f", usuarioActual.getSaldo())
-                    + "{{NL}}Bloqueado en pujas: €" + String.format("%.2f", usuarioActual.getSaldoBloqueado())
-                    + "{{NL}}Disponible: €" + String.format("%.2f", usuarioActual.getSaldoDisponible()));
+
+            out.println("SALDO:" + usuarioActual.getSaldo() + ":"
+                    + usuarioActual.getSaldoBloqueado() + ":"
+                    + usuarioActual.getSaldoDisponible());
+
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó saldo");
 
         } else if (param.equals("history")) {
-            String historial = usuarioActual.mostrarHistorial();
-            String historialEscapado = historial.replace("\n", "{{NL}}");
-            out.println("HISTORIAL:" + historialEscapado);
+
+            if (usuarioActual.getHistorialPujas() == null || usuarioActual.getHistorialPujas().isEmpty()) {
+                out.println("HISTORIAL_VACIO");
+                System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (vacío)");
+            } else {
+                StringBuilder sb = new StringBuilder("HISTORIAL:");
+
+                for (Puja p : usuarioActual.getHistorialPujas()) {
+                    sb.append(p.getIdSubasta()).append("|")
+                            .append(String.format("%.2f", p.getCantidad())).append("|")
+                            .append(p.getFechaFormato()).append(";");
+                }
+
+                if (sb.charAt(sb.length() - 1) == ';') {
+                    sb.setLength(sb.length() - 1);
+                }
+
+                out.println(sb.toString());
+                System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial ("
+                        + usuarioActual.getHistorialPujas().size() + " pujas)");
+            }
+
         } else {
-            out.println("ERROR:Comando de consulta desconocido");
+            out.println("CONSULT_ERROR:Comando de consulta desconocido");
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó parámetro inválido: " + param);
         }
     }
 
@@ -330,7 +350,7 @@ public class ManejadorCliente implements Runnable {
                     .append(s.getTiempoRestante()).append(";");
         }
 
-        out.println(sb.toString()); // LISTA:id|titulo|precioActual|pujadorLider|tiempo;id|titulo|precioActual|pujadorLider|tiempo;...
+        out.println(sb.toString());
 
     }
 }

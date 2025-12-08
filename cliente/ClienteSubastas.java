@@ -9,10 +9,6 @@ import java.util.Scanner;
 
 public class ClienteSubastas {
 
-    // He puesto toda la clase estática porque así es más cómodo y no tiene por qué
-    // dar problemas
-    // Cada cliente se va a ejecutar por separado, no usamos objetos y ya.
-    // No tenemos que instanciar objetos y tenemos acceso fácil
     private static final String HOST = "localhost";
     private static final int PUERTO = 5000;
 
@@ -22,7 +18,6 @@ public class ClienteSubastas {
     private static Scanner scanner;
     private static String nombreUsuario;
     private static boolean conexion;
-    // Private static float saldo; ?????
 
     private static Thread hiloNotificaciones;
 
@@ -63,7 +58,7 @@ public class ClienteSubastas {
                 }
             }
             conexion = true;
-            iniciarHiloNotificaciones(); // Cambiar del while a aquí, para que solo se inicie una vez
+            iniciarHiloNotificaciones();
 
             while (conexion) {
 
@@ -102,15 +97,15 @@ public class ClienteSubastas {
             public void run() {
                 try {
                     while (conexion) {
-                        if (in.ready()) { // Comprueba si hay datos disponibles
+                        if (in.ready()) {
                             String linea = in.readLine();
                             if (linea == null) {
-                                break; // Conexión cerrada
+                                break;
                             }
                             if (linea.startsWith("NOTIF_")) {
                                 procesarNotificacion(linea);
                             }
-                            Thread.sleep(100); // Pequeña pausa para evitar uso excesivo de CPU
+                            Thread.sleep(100);
 
                         }
                     }
@@ -169,13 +164,11 @@ public class ClienteSubastas {
         System.out.print("Confirma la contraseña: ");
         String passwordConfirm = scanner.nextLine();
 
-        // Validación local
         if (!password.equals(passwordConfirm)) {
             System.out.println("[CLIENT] Las contraseñas no coinciden");
             return false;
         }
 
-        // Enviar solicitud de registro al servidor
         out.println("REGISTER:" + usuario + ":" + password);
 
         try {
@@ -200,7 +193,7 @@ public class ClienteSubastas {
         System.out.println("Escribe tu nombre:");
         nombreUsuario = scanner.nextLine();
         System.out.println("Escribe la contraseña:");
-        // Guardo contraseña en atributo? No se va a volver a usar, no?
+
         out.println("LOGIN:" + nombreUsuario + ":" + scanner.nextLine());
 
         String respuesta;
@@ -211,7 +204,7 @@ public class ClienteSubastas {
                 return true;
             } else if (respuesta.startsWith("LOGIN_ERROR:")) {
                 String error = respuesta.substring(12);
-                System.out.println("✗ " + error);
+                System.out.println("Error: " + error);
                 return false;
             }
         } catch (IOException e) {
@@ -271,7 +264,7 @@ public class ClienteSubastas {
     private static void ingresarDinero() {
         System.out.println("¿Cuánto dinero quieres ingresar?");
         double cantidad = scanner.nextDouble();
-        out.println("DEP:" + cantidad); // Ingresar : deposit
+        out.println("DEP:" + cantidad);
 
         try {
             String respuesta = in.readLine();
@@ -289,7 +282,7 @@ public class ClienteSubastas {
 
     private static void agregarSubasta() {
         System.out.println("Introduce el título de la subasta:");
-        scanner.nextLine(); // Consumir el salto de línea pendiente
+        scanner.nextLine(); // Consumir el salto que se queda
         String titulo = scanner.nextLine();
 
         System.out.println("Introduce el precio inicial:");
@@ -297,8 +290,7 @@ public class ClienteSubastas {
         System.out.println("Introduce la duración en segundos:");
         int duracion = scanner.nextInt();
 
-        out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion); // Ejemplo de salida: ADD:Cuadro
-                                                                             // antiguo:100.0:120
+        out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion);
 
         try {
             String respuesta = in.readLine();
@@ -316,7 +308,6 @@ public class ClienteSubastas {
     private static void listarSubastas() {
         System.out.println("He solicitado la lista de subastas al servidor");
         out.println("LIST");
-        // leer la respuesta
 
         try {
             String respuesta = in.readLine();
@@ -331,7 +322,7 @@ public class ClienteSubastas {
                 System.out.println("Subastas disponibles:");
                 for (String subasta : subastas) {
 
-                    String[] partes = subasta.split("\\|"); // | escapado
+                    String[] partes = subasta.split("\\|"); // | escapo
 
                     String id = partes[0];
                     String titulo = partes[1];
@@ -355,7 +346,7 @@ public class ClienteSubastas {
 
     private static void infoSubasta() {
         System.out.println("Elige una subasta entre las disponibles:");
-        int idSubasta = scanner.nextInt(); // Manejar si no mete un int?
+        int idSubasta = scanner.nextInt();
         out.println("INFO:" + idSubasta);
         try {
             System.out.println(in.readLine());
@@ -369,9 +360,6 @@ public class ClienteSubastas {
         int idSubasta = scanner.nextInt();
         System.out.println("Introduce la cantidad que quieras pujar:");
         double cantidad = scanner.nextDouble();
-        // Es como raro pasarle las dos cosas a la vez. Hacer un intermedio de pasarle
-        // la subasta,
-        // ver si existe o lo que sea, mostrarla, y ya pasarle la cantidad?
         out.println("BID:" + idSubasta + ":" + cantidad);
 
         try {

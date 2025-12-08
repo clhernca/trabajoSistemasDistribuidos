@@ -10,7 +10,7 @@ public class Usuario implements java.io.Serializable {
     private String contraseña;
     private double saldo;
     private double saldoBloqueado;
-    private List<Puja> historialPujas  = new ArrayList<>();
+    private List<Puja> historialPujas = new ArrayList<>();
     private int subastasGanadas;
 
     public Usuario() {
@@ -18,13 +18,12 @@ public class Usuario implements java.io.Serializable {
 
     }
 
-
     public Usuario(String nombre, String contraseña, double saldoInicial) {
         this.nombre = nombre;
         this.contraseña = contraseña;
         this.saldo = saldoInicial;
         this.saldoBloqueado = 0.0;
-        //this.historialPujas = new ArrayList<>();
+        // this.historialPujas = new ArrayList<>();
         this.subastasGanadas = 0;
     }
 
@@ -58,37 +57,38 @@ public class Usuario implements java.io.Serializable {
     public double getSaldoDisponible() {
         return saldo - saldoBloqueado;
     }
-    
+
     public double getSaldoBloqueado() {
         return saldoBloqueado;
     }
-    
+
     public boolean puedePujar(double cantidad) {
         return getSaldoDisponible() >= cantidad;
     }
-    
+
     public synchronized void bloquearDinero(double cantidad) {
         if (getSaldoDisponible() >= cantidad) {
             saldoBloqueado += cantidad;
         }
     }
-    
+
     public synchronized void liberarDinero(double cantidad) {
         saldoBloqueado -= cantidad;
     }
-    
+
     public synchronized void confirmarGasto(double cantidad) {
         saldoBloqueado -= cantidad;
         saldo -= cantidad;
-        if (saldoBloqueado < 0) saldoBloqueado = 0;
+        if (saldoBloqueado < 0)
+            saldoBloqueado = 0;
     }
-    
+
     public synchronized void cancelarBloqueo(double cantidad) {
         liberarDinero(cantidad);
     }
 
     @XmlElementWrapper(name = "historialPujas")
-    @XmlElement (name = "puja")
+    @XmlElement(name = "puja")
     public List<Puja> getHistorialPujas() {
         return historialPujas;
     }
@@ -107,7 +107,6 @@ public class Usuario implements java.io.Serializable {
     }
 
     public synchronized void registrarPuja(Puja puja) {
- //       System.out.println("AÑADO PUJA");
         historialPujas.add(puja);
     }
 
@@ -116,28 +115,28 @@ public class Usuario implements java.io.Serializable {
     }
 
     public String mostrarHistorial() {
-    if (historialPujas == null || historialPujas.isEmpty()) {
-        return "No has realizado ninguna puja todavía.";
+        if (historialPujas == null || historialPujas.isEmpty()) {
+            return "No has realizado ninguna puja todavía.";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== HISTORIAL DE PUJAS DE ").append(nombre.toUpperCase()).append(" ===\n");
+
+        for (Puja p : historialPujas) {
+            sb.append("Subasta ").append(p.getIdSubasta())
+                    .append(" | Cantidad: ").append(String.format("%.2f", p.getCantidad()))
+                    .append("€ | Fecha: ").append(p.getFechaFormato())
+                    .append("\n");
+        }
+
+        sb.append("Total de pujas realizadas: ").append(historialPujas.size());
+
+        return sb.toString();
     }
-    
-    StringBuilder sb = new StringBuilder();
-    sb.append("=== HISTORIAL DE PUJAS DE ").append(nombre.toUpperCase()).append(" ===\n");
-    
-    for (Puja p : historialPujas) {
-        sb.append("Subasta ").append(p.getIdSubasta())
-          .append(" | Cantidad: ").append(String.format("%.2f", p.getCantidad()))
-          .append("€ | Fecha: ").append(p.getFechaFormato())
-          .append("\n");
-    }
-    
-    sb.append("Total de pujas realizadas: ").append(historialPujas.size());
-    
-    return sb.toString();
-}
 
     public String toString() {
         return nombre + " (€" + String.format("%.2f", saldo) + ") - " +
-               subastasGanadas + " subastas ganadas";
+                subastasGanadas + " subastas ganadas";
     }
 
 }

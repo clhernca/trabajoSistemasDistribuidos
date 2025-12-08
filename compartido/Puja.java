@@ -16,7 +16,7 @@ public class Puja {
     private long timestamp;
 
     public Puja() {
-        // Constructor vacío para XML
+        // Dejar para lo de XML
     }
 
     public Puja(String usuario, int id, double cantidad) {

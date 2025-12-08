@@ -13,10 +13,9 @@ import java.util.List;
 public class ServidorSubastas {
 
     private static final int PUERTO = 5000;
-    // private static final int NUM_HILOS = 10;
 
     private ServerSocket servidor;
-    private static ExecutorService pool; // static para que el main pueda acceder
+    private static ExecutorService pool;
     private GestorSubastas gestorSubastas;
     private GestorUsuarios gestorUsuarios;
     private GestorNotificaciones gestorNotificaciones;
@@ -79,20 +78,17 @@ public class ServidorSubastas {
 
                     while (true) {
 
-                        Thread.sleep(5000); // Cada 5 segundos
+                        Thread.sleep(5000);
 
                         List<Subasta> finalizadas = gestorSubastas.verificarSubastasFinalizadas();
 
                         if (!finalizadas.isEmpty()) {
                             System.out.println("[TEMPORIZADOR] Se han finalizado " + finalizadas.size() + " subastas:");
                             for (Subasta s : finalizadas) {
-                                String ganador = s.getGanador() != null ? s.getGanador() : "Ninguno"; // Obtiene el
-                                                                                                      // ganador
-                                                                                                      // o "Ninguno"
+                                String ganador = s.getGanador() != null ? s.getGanador() : "Ninguno";
                                 System.out.println(s.getTitulo() + " → Ganador: " + ganador +
                                         " | Precio: " + String.format("%.2f", s.getPrecioFinal()) + "€");
 
-                                // Registrar victoria del usuario
                                 if (s.getGanador() != null && !s.getGanador().equals("Ninguno")) {
                                     gestorNotificaciones.notificarSubastaTerminada(
                                             s.getGanador(),
@@ -102,7 +98,7 @@ public class ServidorSubastas {
                                     Usuario ganadorUser = gestorUsuarios.obtenerUsuario(s.getGanador());
                                     if (ganadorUser != null) {
                                         ganadorUser.confirmarGasto(s.getPrecioFinal());
-                                        ganadorUser.ganarSubasta(); // Incrementa el contador de subastas ganadas
+                                        ganadorUser.ganarSubasta();
                                     }
                                 }
                             }
@@ -113,7 +109,7 @@ public class ServidorSubastas {
                     }
 
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Limpiar estado de interrupción
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
             }
@@ -131,35 +127,35 @@ public class ServidorSubastas {
 
                     while (true) {
 
-                        Thread.sleep(10000); // Espera un minuto
+                        Thread.sleep(10000);
                         GestorXML.guardarUsuarios(gestorUsuarios
                                 .obtenerTodosUsuarios());
                         GestorXML.guardarSubastas(gestorSubastas.obtenerSubastas());
                     }
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
             }
         });
 
-        persistenciaThread.setDaemon(true); // Hilo daemon para que no bloquee el cierre del programa
+        persistenciaThread.setDaemon(true);
         persistenciaThread.start();
     }
 
     private void cargarDatos() {
         System.out.println("[SERVIDOR] Cargando datos...");
 
-        List<Usuario> usuariosGuardados = GestorXML.cargarUsuarios(); // Carga usuarios desde XML
+        List<Usuario> usuariosGuardados = GestorXML.cargarUsuarios();
         if (usuariosGuardados.isEmpty()) {
-            gestorUsuarios.inicializarUsuariosDemo(); // Si no hay usuarios guardados, crea algunos de demo
+            gestorUsuarios.inicializarUsuariosDemo();
         } else {
             for (Usuario u : usuariosGuardados) {
-                gestorUsuarios.agregarUsuario(u); // Agrega cada usuario cargado al gestor de usuarios
+                gestorUsuarios.agregarUsuario(u);
             }
         }
 
-        List<Subasta> subastasGuardadas = GestorXML.cargarSubastas(); // Lo mismo con las subastas
+        List<Subasta> subastasGuardadas = GestorXML.cargarSubastas();
         if (subastasGuardadas.isEmpty()) {
             gestorSubastas.inicializarSubastasDemo();
         } else {

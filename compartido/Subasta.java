@@ -14,7 +14,7 @@ public class Subasta implements java.io.Serializable {
     private double precioFinal;
 
     public Subasta() {
-        // Constructor vacío para XML
+        // Para XML
     }
 
     public Subasta(int id, String titulo, double precioInicial) {
@@ -31,7 +31,7 @@ public class Subasta implements java.io.Serializable {
 
     public Subasta(int id, String titulo, double precioInicial, int duracion) {
         this.id = id;
-        this.titulo = titulo;  
+        this.titulo = titulo;
         this.precioActual = precioInicial;
         this.pujadorLider = "Ninguno";
         this.activa = true;
@@ -53,8 +53,8 @@ public class Subasta implements java.io.Serializable {
         return false;
     }
 
-    public synchronized void cerrar(String ganador) { // Lo llama un hilo para cerrar la subasta
-        activa = false; // Marca la subasta como cerrada, registra el ganador y el precio final
+    public synchronized void cerrar(String ganador) {
+        activa = false;
         this.ganador = ganador;
         this.precioFinal = precioActual;
     }
@@ -67,6 +67,7 @@ public class Subasta implements java.io.Serializable {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -75,6 +76,7 @@ public class Subasta implements java.io.Serializable {
     public String getTitulo() {
         return titulo;
     }
+
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
