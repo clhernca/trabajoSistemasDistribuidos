@@ -297,20 +297,47 @@ public class ManejadorCliente implements Runnable {
         out.println("INFO_OK:" + subasta.toString());
     }
 
-    private void consultar(String param) {
-        if (param.equals("credit")) {
-            out.println("SALDO:Tu saldo total: €" + String.format("%.2f", usuarioActual.getSaldo())
-                    + "{{NL}}Bloqueado en pujas: €" + String.format("%.2f", usuarioActual.getSaldoBloqueado())
-                    + "{{NL}}Disponible: €" + String.format("%.2f", usuarioActual.getSaldoDisponible()));
 
-        } else if (param.equals("history")) {
-            String historial = usuarioActual.mostrarHistorial();
-            String historialEscapado = historial.replace("\n", "{{NL}}");
-            out.println("HISTORIAL:" + historialEscapado);
+    private void consultar(String param) {
+    if (param.equals("credit")) {
+        // Formato: SALDO:saldoTotal:saldoBloqueado:saldoDisponible
+        out.println("SALDO:" + usuarioActual.getSaldo() + ":" 
+                + usuarioActual.getSaldoBloqueado() + ":" 
+                + usuarioActual.getSaldoDisponible());
+        
+        System.out.println("[" + usuarioActual.getNombre() + "] Consultó saldo");
+
+    } else if (param.equals("history")) {
+        // Formato: HISTORIAL:idSubasta1|cantidad1|fecha1;idSubasta2|cantidad2|fecha2;...
+        // O: HISTORIAL_VACIO si no hay pujas
+        
+        if (usuarioActual.getHistorialPujas() == null || usuarioActual.getHistorialPujas().isEmpty()) {
+            out.println("HISTORIAL_VACIO");
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (vacío)");
         } else {
-            out.println("ERROR:Comando de consulta desconocido");
+            StringBuilder sb = new StringBuilder("HISTORIAL:");
+            
+            for (Puja p : usuarioActual.getHistorialPujas()) {
+                sb.append(p.getIdSubasta()).append("|")
+                  .append(String.format("%.2f", p.getCantidad())).append("|")
+                  .append(p.getFechaFormato()).append(";");
+            }
+            
+            // Eliminar el último ";" si existe
+            if (sb.charAt(sb.length() - 1) == ';') {
+                sb.setLength(sb.length() - 1);
+            }
+            
+            out.println(sb.toString());
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (" 
+                    + usuarioActual.getHistorialPujas().size() + " pujas)");
         }
+        
+    } else {
+        out.println("CONSULT_ERROR:Comando de consulta desconocido");
+        System.out.println("[" + usuarioActual.getNombre() + "] Consultó parámetro inválido: " + param);
     }
+}
 
     private void manejarListar() {
         System.out.println("[" + usuarioActual.getNombre() + "] Pidió listar subastas");

@@ -397,23 +397,10 @@ public class ClienteSubastasMejorado {
 
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("BID_OK")) {
-            imprimirConsola("✓ Puja aceptada correctamente");
+            imprimirConsola("[BID_OK] Puja aceptada");
         } else if (respuesta != null && respuesta.startsWith("BID_ERROR")) {
             String error = respuesta.substring(10);
-            imprimirConsola("✗ Puja rechazada: " + error);
-        }
-    }
-
-    private static void consultarHistorial() {
-        out.println("CONSULT:history");
-
-        String respuesta = esperarRespuesta();
-        if (respuesta != null && respuesta.startsWith("HISTORIAL:")) {
-            String historial = respuesta.substring(10);
-            historial = historial.replace("{{NL}}", "\n");
-            imprimirConsola("\n" + historial);
-        } else {
-            imprimirConsola("✗ Error al consultar historial");
+            imprimirConsola("[BID_ERROR] Puja rechazada: " + error);
         }
     }
 
@@ -422,11 +409,50 @@ public class ClienteSubastasMejorado {
 
         String respuesta = esperarRespuesta();
         if (respuesta != null && respuesta.startsWith("SALDO:")) {
-            String mensaje = respuesta.substring(6);
-            mensaje = mensaje.replace("{{NL}}", "\n");
-            imprimirConsola("\n💳 " + mensaje);
+            String datos = respuesta.substring(6); // Quitar "SALDO:"
+            String[] partes = datos.split(":");
+
+            String saldoTotal = partes[0];
+            String saldoBloqueado = partes[1];
+            String saldoDisponible = partes[2];
+
+            imprimirConsola("\n[SALDO] Tu información financiera:");
+            imprimirConsola("  Saldo total:      " + saldoTotal + "€");
+            imprimirConsola("  Bloqueado:        " + saldoBloqueado + "€");
+            imprimirConsola("  Disponible:       " + saldoDisponible + "€");
+
         } else {
-            imprimirConsola("✗ Error al consultar saldo");
+            imprimirConsola("[SALDO_ERROR] No se pudo consultar el saldo");
+        }
+    }
+
+    private static void consultarHistorial() {
+        out.println("CONSULT:history");
+
+        String respuesta = esperarRespuesta();
+
+        if (respuesta != null && respuesta.equals("HISTORIAL_VACIO")) {
+            imprimirConsola("\n[HISTORIAL] No has realizado ninguna puja todavía");
+
+        } else if (respuesta != null && respuesta.startsWith("HISTORIAL:")) {
+            String datos = respuesta.substring(10); // Quitar "HISTORIAL:"
+            String[] pujas = datos.split(";");
+
+            imprimirConsola("\n[HISTORIAL] Tus pujas:");
+
+            for (String puja : pujas) {
+                String[] partes = puja.split("\\|");
+                String idSubasta = partes[0];
+                String cantidad = partes[1];
+                String fecha = partes[2];
+
+                imprimirConsola("  Subasta #" + idSubasta + " | " + cantidad + "€ | " + fecha);
+            }
+
+            imprimirConsola("  Total de pujas: " + pujas.length);
+
+        } else {
+            imprimirConsola("[HISTORIAL_ERROR] No se pudo consultar el historial");
         }
     }
 

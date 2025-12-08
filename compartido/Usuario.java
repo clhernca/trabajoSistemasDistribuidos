@@ -121,18 +121,16 @@ public class Usuario implements java.io.Serializable {
     }
     
     StringBuilder sb = new StringBuilder();
-    sb.append("\n═══════════════════════════════════════════════════════\n");
-    sb.append("              HISTORIAL DE PUJAS DE ").append(nombre.toUpperCase()).append("\n");
-    sb.append("═══════════════════════════════════════════════════════\n\n");
+    sb.append("=== HISTORIAL DE PUJAS DE ").append(nombre.toUpperCase()).append(" ===\n");
     
     for (Puja p : historialPujas) {
-        sb.append("🔹 Subasta #").append(p.getIdSubasta()).append("\n");
-        sb.append("   💵 Cantidad: €").append(String.format("%.2f", p.getCantidad())).append("\n");
-        sb.append("   🕐 Hora: ").append(p.getFechaFormato()).append("\n\n");
+        sb.append("Subasta ").append(p.getIdSubasta())
+          .append(" | Cantidad: ").append(String.format("%.2f", p.getCantidad()))
+          .append("€ | Fecha: ").append(p.getFechaFormato())
+          .append("\n");
     }
     
-    sb.append("═══════════════════════════════════════════════════════\n");
-    sb.append("Total de pujas realizadas: ").append(historialPujas.size()).append("\n");
+    sb.append("Total de pujas realizadas: ").append(historialPujas.size());
     
     return sb.toString();
 }
