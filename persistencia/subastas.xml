@@ -50,4 +50,24 @@
         <tiempoFinal>1765135287630</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
     </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>6</id>
+        <precioActual>200.0</precioActual>
+        <precioFinal>200.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765195354458</tiempoFinal>
+        <titulo>Raton inalambrico</titulo>
+    </subasta>
+    <subasta>
+        <activa>false</activa>
+        <ganador>alice</ganador>
+        <id>7</id>
+        <precioActual>250.0</precioActual>
+        <precioFinal>250.0</precioFinal>
+        <pujadorLider>alice</pujadorLider>
+        <tiempoFinal>1765195510952</tiempoFinal>
+        <titulo>cartera</titulo>
+    </subasta>
 </subastas>
