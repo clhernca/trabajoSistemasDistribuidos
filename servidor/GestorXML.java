@@ -90,7 +90,7 @@ public class GestorXML {
     public static List<Usuario> cargarUsuarios() {
         try {
             File archivo = new File(ARCHIVO_USUARIOS);
-            
+
             File directorio = archivo.getParentFile();
             if (directorio != null && !directorio.exists()) {
                 directorio.mkdirs();
@@ -99,7 +99,7 @@ public class GestorXML {
             if (!archivo.exists()) {
                 System.out.println("[XML] No hay archivo de usuarios. Usando estado en memoria.");
                 return new ArrayList<>();
-
+            }
             JAXBContext context = JAXBContext.newInstance(UsuariosXML.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             UsuariosXML wrapper = (UsuariosXML) unmarshaller.unmarshal(archivo);

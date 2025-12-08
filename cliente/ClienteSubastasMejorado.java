@@ -120,7 +120,7 @@ public class ClienteSubastasMejorado {
             String nuevoLider = mensaje.getParametro(1);
             String nuevoPrecio = mensaje.getParametro(2);
 
-            imprimirConsola("[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider +
+            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider +
                     " con una puja de " + nuevoPrecio + "€");
 
         } else if (comando.equals("NOTIF_GANADOR")) {
@@ -128,7 +128,7 @@ public class ClienteSubastasMejorado {
             String tituloSubasta = mensaje.getParametro(1);
             String precioFinal = mensaje.getParametro(2);
 
-            imprimirConsola("[NOTIFICACIÓN] Has ganado la subasta #" + idSubasta + " '" + tituloSubasta
+            imprimirConsola("\n[NOTIFICACIÓN] Has ganado la subasta #" + idSubasta + " '" + tituloSubasta
                     + "' con un precio final de " + precioFinal + "€");
         }
     }
