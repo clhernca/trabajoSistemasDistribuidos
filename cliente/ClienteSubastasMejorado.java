@@ -459,6 +459,6 @@ public class ClienteSubastasMejorado {
     private static void salir() {
         out.println("SALIR");
         conexion = false;
-        imprimirConsola("\n👋 Hasta pronto!");
+        imprimirConsola("\n[SALIR] Cerrando sesión. Hasta pronto");
     }
 }
