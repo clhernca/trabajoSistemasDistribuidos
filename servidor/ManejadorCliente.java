@@ -31,7 +31,7 @@ public class ManejadorCliente implements Runnable {
     public void run() {
 
         try {
-            // Crear streams de entrada/salida
+            
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -58,10 +58,7 @@ public class ManejadorCliente implements Runnable {
 
                 } else if (comando.equals("REGISTER")) {
                     if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
-                        // Registro exitoso, automáticamente lo logueamos
-                        //NO ME GUSTA AQUÍ LO DE USUARIO ACTUAL, CAMBIAR A DENTRO DE MANEJAREGISTRO
-                        //usuarioActual = gestorUsuarios.login(mensajeAut.getParametro(0),
-                                //mensajeAut.getParametro(1));
+                        
                         out.println("REGISTER_OK");
                         autenticado = true;
                     } else {
@@ -73,7 +70,7 @@ public class ManejadorCliente implements Runnable {
                 }
             }
 
-            if (usuarioActual != null) { // Lo he puesto aqui, no se si está perfecto
+            if (usuarioActual != null) {
                 gestorNotificaciones.registrarCliente(usuarioActual.getNombre(), out);
             }
 
@@ -85,7 +82,7 @@ public class ManejadorCliente implements Runnable {
 
                 if (mensaje == null) {
                     out.println("ERROR:Mensaje inválido");
-                    continue; // Qué hace esto?
+                    continue;
                 }
 
                 procesarComando(mensaje);
@@ -194,14 +191,14 @@ public class ManejadorCliente implements Runnable {
     private void manejarAgregarSubasta(Mensaje mensaje) {
         String titulo = mensaje.getParametro(0);
         double precioInicial = mensaje.getParametroDouble(1);
-        int duracion = mensaje.getParametroInt(2); // en segundos
+        int duracion = mensaje.getParametroInt(2);
 
         if (titulo == null || precioInicial == -1.0) {
             out.println("ADD_ERROR:Parámetros inválidos");
             return;
         }
 
-        int nuevoId = gestorSubastas.obtenerSubastas().size() + 1; // Asigna un ID incremental
+        int nuevoId = gestorSubastas.obtenerSubastas().size() + 1;
         Subasta nuevaSubasta = new Subasta(nuevoId, titulo, precioInicial, duracion);
         gestorSubastas.agregarSubasta(nuevaSubasta);
 
@@ -300,7 +297,7 @@ public class ManejadorCliente implements Runnable {
 
     private void consultar(String param) {
     if (param.equals("credit")) {
-        // Formato: SALDO:saldoTotal:saldoBloqueado:saldoDisponible
+        
         out.println("SALDO:" + usuarioActual.getSaldo() + ":" 
                 + usuarioActual.getSaldoBloqueado() + ":" 
                 + usuarioActual.getSaldoDisponible());
@@ -308,8 +305,7 @@ public class ManejadorCliente implements Runnable {
         System.out.println("[" + usuarioActual.getNombre() + "] Consultó saldo");
 
     } else if (param.equals("history")) {
-        // Formato: HISTORIAL:idSubasta1|cantidad1|fecha1;idSubasta2|cantidad2|fecha2;...
-        // O: HISTORIAL_VACIO si no hay pujas
+        
         
         if (usuarioActual.getHistorialPujas() == null || usuarioActual.getHistorialPujas().isEmpty()) {
             out.println("HISTORIAL_VACIO");
@@ -323,7 +319,6 @@ public class ManejadorCliente implements Runnable {
                   .append(p.getFechaFormato()).append(";");
             }
             
-            // Eliminar el último ";" si existe
             if (sb.charAt(sb.length() - 1) == ';') {
                 sb.setLength(sb.length() - 1);
             }
@@ -357,7 +352,7 @@ public class ManejadorCliente implements Runnable {
                     .append(s.getTiempoRestante()).append(";");
         }
 
-        out.println(sb.toString()); // LISTA:id|titulo|precioActual|pujadorLider|tiempo;id|titulo|precioActual|pujadorLider|tiempo;...
+        out.println(sb.toString());
 
     }
 }
