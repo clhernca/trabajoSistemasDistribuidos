@@ -85,11 +85,10 @@ public class ServidorSubastas {
                         if (!finalizadas.isEmpty()) {
                             System.out.println("[TEMPORIZADOR] Se han finalizado " + finalizadas.size() + " subastas:");
                             for (Subasta s : finalizadas) {
-                                String ganador = s.getGanador() != null ? s.getGanador() : "Ninguno"; 
+                                String ganador = s.getGanador() != null ? s.getGanador() : "Ninguno";
                                 System.out.println(s.getTitulo() + " → Ganador: " + ganador +
                                         " | Precio: " + String.format("%.2f", s.getPrecioFinal()) + "€");
 
-                                
                                 if (s.getGanador() != null && !s.getGanador().equals("Ninguno")) {
                                     gestorNotificaciones.notificarSubastaTerminada(
                                             s.getGanador(),

@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GestorNotificaciones {
 
     private Map<String, PrintWriter> clientesConectados;
-                                                         
 
     public GestorNotificaciones() {
         this.clientesConectados = new ConcurrentHashMap<>();
@@ -29,7 +28,7 @@ public class GestorNotificaciones {
             try {
                 String mensaje = String.format("NOTIF_ADELANTADO:%d:%s:%.2f",
                         idSubasta, nuevoLider, nuevoPrecio);
-                                                             
+
                 writer.println(mensaje);
                 writer.flush();
                 System.out.println("[NOTIF] Notificación enviada a " + usuarioAnterior + ": " + mensaje);
@@ -45,8 +44,8 @@ public class GestorNotificaciones {
         if (writer != null) {
             try {
                 String mensaje = String.format("NOTIF_GANADOR:%d:%s:%.2f",
-                        idSubasta, tituloSubasta, precioFinal); 
-                                                               
+                        idSubasta, tituloSubasta, precioFinal);
+
                 writer.println(mensaje);
                 writer.flush();
                 System.out.println("[NOTIF] Notificación de victoria enviada a " + ganador + ": " + mensaje);
@@ -57,7 +56,7 @@ public class GestorNotificaciones {
         }
     }
 
-    public boolean estaConectado(String nombreUsuario) { 
+    public boolean estaConectado(String nombreUsuario) {
         return clientesConectados.containsKey(nombreUsuario);
     }
 

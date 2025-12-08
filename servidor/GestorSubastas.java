@@ -52,7 +52,6 @@ public class GestorSubastas {
             }
         }
 
-        
         if (sb.length() > 0) {
             sb.deleteCharAt(sb.length() - 1);
         }
@@ -103,6 +102,6 @@ public class GestorSubastas {
         agregarSubasta(new Subasta(5, "Monitor Samsung 4K", 250.00));
 
         System.out.println("[SERVIDOR] Se crearon 5 subastas de prueba");
-    
+
     }
 }

@@ -31,7 +31,7 @@ public class Subasta implements java.io.Serializable {
 
     public Subasta(int id, String titulo, double precioInicial, int duracion) {
         this.id = id;
-        this.titulo = titulo;  
+        this.titulo = titulo;
         this.precioActual = precioInicial;
         this.pujadorLider = "Ninguno";
         this.activa = true;
@@ -67,6 +67,7 @@ public class Subasta implements java.io.Serializable {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -75,6 +76,7 @@ public class Subasta implements java.io.Serializable {
     public String getTitulo() {
         return titulo;
     }
+
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }

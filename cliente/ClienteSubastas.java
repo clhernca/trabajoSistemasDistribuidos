@@ -97,10 +97,10 @@ public class ClienteSubastas {
             public void run() {
                 try {
                     while (conexion) {
-                        if (in.ready()) { 
+                        if (in.ready()) {
                             String linea = in.readLine();
                             if (linea == null) {
-                                break; 
+                                break;
                             }
                             if (linea.startsWith("NOTIF_")) {
                                 procesarNotificacion(linea);
@@ -164,13 +164,11 @@ public class ClienteSubastas {
         System.out.print("Confirma la contraseña: ");
         String passwordConfirm = scanner.nextLine();
 
-        
         if (!password.equals(passwordConfirm)) {
             System.out.println("[CLIENT] Las contraseñas no coinciden");
             return false;
         }
 
-       
         out.println("REGISTER:" + usuario + ":" + password);
 
         try {
@@ -195,7 +193,7 @@ public class ClienteSubastas {
         System.out.println("Escribe tu nombre:");
         nombreUsuario = scanner.nextLine();
         System.out.println("Escribe la contraseña:");
-        
+
         out.println("LOGIN:" + nombreUsuario + ":" + scanner.nextLine());
 
         String respuesta;
@@ -257,7 +255,7 @@ public class ClienteSubastas {
             case 8:
                 salir();
                 break;
-            default: //Autocompletado
+            default: // Autocompletado
                 throw new AssertionError();
         }
     }
@@ -265,7 +263,7 @@ public class ClienteSubastas {
     private static void ingresarDinero() {
         System.out.println("¿Cuánto dinero quieres ingresar?");
         double cantidad = scanner.nextDouble();
-        out.println("DEP:" + cantidad); 
+        out.println("DEP:" + cantidad);
 
         try {
             String respuesta = in.readLine();
@@ -283,7 +281,7 @@ public class ClienteSubastas {
 
     private static void agregarSubasta() {
         System.out.println("Introduce el título de la subasta:");
-        scanner.nextLine(); //Consumir el salto que se queda
+        scanner.nextLine(); // Consumir el salto que se queda
         String titulo = scanner.nextLine();
 
         System.out.println("Introduce el precio inicial:");
@@ -291,8 +289,7 @@ public class ClienteSubastas {
         System.out.println("Introduce la duración en segundos:");
         int duracion = scanner.nextInt();
 
-        out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion); 
-                                                                             
+        out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion);
 
         try {
             String respuesta = in.readLine();
@@ -318,7 +315,7 @@ public class ClienteSubastas {
                 System.out.println("No hay subastas disponibles");
                 return;
             } else if (respuesta.startsWith("LISTA:")) {
-                String listaSubastas = respuesta.substring(6); //Quitar "LISTA:"
+                String listaSubastas = respuesta.substring(6); // Quitar "LISTA:"
                 String[] subastas = listaSubastas.split(";");
 
                 System.out.println("Subastas disponibles:");

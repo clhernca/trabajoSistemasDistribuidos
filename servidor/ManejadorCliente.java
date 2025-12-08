@@ -31,7 +31,7 @@ public class ManejadorCliente implements Runnable {
     public void run() {
 
         try {
-            
+
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -58,7 +58,7 @@ public class ManejadorCliente implements Runnable {
 
                 } else if (comando.equals("REGISTER")) {
                     if (manejarRegistro(mensajeAut.getParametro(0), mensajeAut.getParametro(1))) {
-                        
+
                         out.println("REGISTER_OK");
                         autenticado = true;
                     } else {
@@ -185,7 +185,7 @@ public class ManejadorCliente implements Runnable {
         usuarioActual.sumarSaldo(cantidad);
         System.out.println("[" + usuarioActual.getNombre() + "] Ingresó €" + String.format("%.2f", cantidad)
                 + " | Nuevo saldo: €" + String.format("%.2f", usuarioActual.getSaldo()));
-        out.println("DEP_OK:"+  String.format("%.2f", usuarioActual.getSaldo()));
+        out.println("DEP_OK:" + String.format("%.2f", usuarioActual.getSaldo()));
     }
 
     private void manejarAgregarSubasta(Mensaje mensaje) {
@@ -294,45 +294,43 @@ public class ManejadorCliente implements Runnable {
         out.println("INFO_OK:" + subasta.toString());
     }
 
-
     private void consultar(String param) {
-    if (param.equals("credit")) {
-        
-        out.println("SALDO:" + usuarioActual.getSaldo() + ":" 
-                + usuarioActual.getSaldoBloqueado() + ":" 
-                + usuarioActual.getSaldoDisponible());
-        
-        System.out.println("[" + usuarioActual.getNombre() + "] Consultó saldo");
+        if (param.equals("credit")) {
 
-    } else if (param.equals("history")) {
-        
-        
-        if (usuarioActual.getHistorialPujas() == null || usuarioActual.getHistorialPujas().isEmpty()) {
-            out.println("HISTORIAL_VACIO");
-            System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (vacío)");
+            out.println("SALDO:" + usuarioActual.getSaldo() + ":"
+                    + usuarioActual.getSaldoBloqueado() + ":"
+                    + usuarioActual.getSaldoDisponible());
+
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó saldo");
+
+        } else if (param.equals("history")) {
+
+            if (usuarioActual.getHistorialPujas() == null || usuarioActual.getHistorialPujas().isEmpty()) {
+                out.println("HISTORIAL_VACIO");
+                System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (vacío)");
+            } else {
+                StringBuilder sb = new StringBuilder("HISTORIAL:");
+
+                for (Puja p : usuarioActual.getHistorialPujas()) {
+                    sb.append(p.getIdSubasta()).append("|")
+                            .append(String.format("%.2f", p.getCantidad())).append("|")
+                            .append(p.getFechaFormato()).append(";");
+                }
+
+                if (sb.charAt(sb.length() - 1) == ';') {
+                    sb.setLength(sb.length() - 1);
+                }
+
+                out.println(sb.toString());
+                System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial ("
+                        + usuarioActual.getHistorialPujas().size() + " pujas)");
+            }
+
         } else {
-            StringBuilder sb = new StringBuilder("HISTORIAL:");
-            
-            for (Puja p : usuarioActual.getHistorialPujas()) {
-                sb.append(p.getIdSubasta()).append("|")
-                  .append(String.format("%.2f", p.getCantidad())).append("|")
-                  .append(p.getFechaFormato()).append(";");
-            }
-            
-            if (sb.charAt(sb.length() - 1) == ';') {
-                sb.setLength(sb.length() - 1);
-            }
-            
-            out.println(sb.toString());
-            System.out.println("[" + usuarioActual.getNombre() + "] Consultó historial (" 
-                    + usuarioActual.getHistorialPujas().size() + " pujas)");
+            out.println("CONSULT_ERROR:Comando de consulta desconocido");
+            System.out.println("[" + usuarioActual.getNombre() + "] Consultó parámetro inválido: " + param);
         }
-        
-    } else {
-        out.println("CONSULT_ERROR:Comando de consulta desconocido");
-        System.out.println("[" + usuarioActual.getNombre() + "] Consultó parámetro inválido: " + param);
     }
-}
 
     private void manejarListar() {
         System.out.println("[" + usuarioActual.getNombre() + "] Pidió listar subastas");
