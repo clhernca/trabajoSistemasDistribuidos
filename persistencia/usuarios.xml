@@ -9,21 +9,21 @@
     </usuario>
     <usuario>
         <contraseña>pass123</contraseña>
-        <historialPujas>
-            <puja>
-                <usuario>ana</usuario>
-                <idSubasta>2</idSubasta>
-                <cantidad>300.0</cantidad>
-                <timestamp>1765209482851</timestamp>
-            </puja>
-        </historialPujas>
+        <historialPujas/>
         <nombre>ana</nombre>
-        <saldo>200.0</saldo>
-        <subastasGanadas>1</subastasGanadas>
+        <saldo>500.0</saldo>
+        <subastasGanadas>0</subastasGanadas>
     </usuario>
     <usuario>
         <contraseña>pass789</contraseña>
-        <historialPujas/>
+        <historialPujas>
+            <puja>
+                <usuario>lucia</usuario>
+                <idSubasta>1</idSubasta>
+                <cantidad>500.0</cantidad>
+                <timestamp>1765214912453</timestamp>
+            </puja>
+        </historialPujas>
         <nombre>lucia</nombre>
         <saldo>600.0</saldo>
         <subastasGanadas>0</subastasGanadas>

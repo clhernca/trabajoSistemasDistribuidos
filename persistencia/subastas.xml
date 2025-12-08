@@ -1,53 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <subastas>
     <subasta>
-        <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <activa>true</activa>
         <id>1</id>
-        <precioActual>150.0</precioActual>
-        <precioFinal>150.0</precioFinal>
-        <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765209498731</tiempoFinal>
+        <precioActual>500.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>lucia</pujadorLider>
+        <tiempoFinal>1765214959966</tiempoFinal>
         <titulo>Laptop Dell XPS</titulo>
     </subasta>
     <subasta>
-        <activa>false</activa>
-        <ganador>ana</ganador>
+        <activa>true</activa>
         <id>2</id>
-        <precioActual>300.0</precioActual>
-        <precioFinal>300.0</precioFinal>
-        <pujadorLider>ana</pujadorLider>
-        <tiempoFinal>1765209498731</tiempoFinal>
+        <precioActual>200.0</precioActual>
+        <precioFinal>0.0</precioFinal>
+        <pujadorLider>Ninguno</pujadorLider>
+        <tiempoFinal>1765214959966</tiempoFinal>
         <titulo>iPhone 15 Pro</titulo>
     </subasta>
     <subasta>
-        <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <activa>true</activa>
         <id>3</id>
         <precioActual>300.0</precioActual>
-        <precioFinal>300.0</precioFinal>
+        <precioFinal>0.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765209498731</tiempoFinal>
+        <tiempoFinal>1765214959966</tiempoFinal>
         <titulo>PlayStation 5</titulo>
     </subasta>
     <subasta>
-        <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <activa>true</activa>
         <id>4</id>
         <precioActual>75.0</precioActual>
-        <precioFinal>75.0</precioFinal>
+        <precioFinal>0.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765209498731</tiempoFinal>
+        <tiempoFinal>1765214959966</tiempoFinal>
         <titulo>AirPods Pro</titulo>
     </subasta>
     <subasta>
-        <activa>false</activa>
-        <ganador>Ninguno</ganador>
+        <activa>true</activa>
         <id>5</id>
         <precioActual>250.0</precioActual>
-        <precioFinal>250.0</precioFinal>
+        <precioFinal>0.0</precioFinal>
         <pujadorLider>Ninguno</pujadorLider>
-        <tiempoFinal>1765209498731</tiempoFinal>
+        <tiempoFinal>1765214959966</tiempoFinal>
         <titulo>Monitor Samsung 4K</titulo>
     </subasta>
 </subastas>
