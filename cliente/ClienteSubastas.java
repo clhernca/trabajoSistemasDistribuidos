@@ -1,11 +1,14 @@
 package cliente;
 
+import compartido.Mensaje;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ClienteSubastas {
 
@@ -19,7 +22,11 @@ public class ClienteSubastas {
     private static String nombreUsuario;
     private static boolean conexion;
 
-    private static Thread hiloNotificaciones;
+    // Cola para comunicación entre hilos
+    private static BlockingQueue<String> colaRespuestas = new LinkedBlockingQueue<>();
+
+    private static Thread hiloLector;
+    private static final Object consoleLock = new Object(); // Para sincronizar impresiones, daba error si no
 
     public static void main(String[] args) {
         try {
@@ -28,18 +35,19 @@ public class ClienteSubastas {
             out = new PrintWriter(socket.getOutputStream(), true);
             scanner = new Scanner(System.in);
 
-            System.out.println("[CLIENT] Conectado al server en " + HOST + ":" + PUERTO);
+            imprimirConsola("[CLIENT] Conectado al server en " + HOST + ":" + PUERTO);
+
+            iniciarHiloLector();
 
             boolean autenticado = false;
             while (!autenticado) {
-                System.out.println("======= BIENVENIDO =======");
-                System.out.println("1. Registrarse");
-                System.out.println("2. Iniciar sesión");
-                System.out.println("3. Salir");
+                imprimirConsola("======= BIENVENIDO =======");
+                imprimirConsola("1. Registrarse");
+                imprimirConsola("2. Iniciar sesión");
+                imprimirConsola("3. Salir");
                 System.out.print("Opción: ");
 
-                int opcion = scanner.nextInt();
-                scanner.nextLine();
+                int opcion = leerEntero();
 
                 switch (opcion) {
                     case 1:
@@ -49,19 +57,17 @@ public class ClienteSubastas {
                         autenticado = login();
                         break;
                     case 3:
-                        System.out.println("[CLIENT] Saliendo...");
+                        imprimirConsola("[CLIENT] Saliendo...");
                         return;
-
                     default:
-                        System.out.println("[CLIENT] Opción inválida. Vuelve a intentarlo.");
+                        imprimirConsola("[CLIENT] Opción inválida. Vuelve a intentarlo.");
                         break;
                 }
             }
+
             conexion = true;
-            iniciarHiloNotificaciones();
 
             while (conexion) {
-
                 mostrarMenu();
             }
 
@@ -72,89 +78,126 @@ public class ClienteSubastas {
         }
     }
 
+    //Para leer las opciones y tal bien
+
+    private static int leerEntero() {
+        while (true) {
+            try {
+                int valor = scanner.nextInt();
+                scanner.nextLine(); // Consumir salto de línea
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                imprimirConsola("[ERROR] Debes introducir un número entero válido. Inténtalo de nuevo:");
+                scanner.nextLine(); // Limpiar buffer
+            }
+        }
+    }
+
+    
+    private static double leerDouble() {
+        while (true) {
+            try {
+                double valor = scanner.nextDouble();
+                scanner.nextLine(); // Consumir salto de línea
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                imprimirConsola("[ERROR] Debes introducir un número válido. Inténtalo de nuevo:");
+                scanner.nextLine(); // Limpiar buffer
+            }
+        }
+    }
+
+    private static void iniciarHiloLector() {
+        hiloLector = new Thread(() -> {
+            try {
+                String linea;
+                while ((linea = in.readLine()) != null) {
+                    if (linea.startsWith("NOTIF_")) {
+                        procesarNotificacion(linea);
+                    } else {
+                        colaRespuestas.offer(linea);
+                    }
+                }
+            } catch (IOException e) {
+                if (conexion) {
+                    imprimirConsola("[ERROR] Conexión con servidor perdida: " + e.getMessage());
+                }
+            }
+        });
+        hiloLector.setDaemon(true);
+        hiloLector.start();
+        imprimirConsola("[SYSTEM] Sistema de comunicación activado");
+    }
+
+    private static void procesarNotificacion(String notificacion) {
+
+        Mensaje mensaje = Mensaje.parsear(notificacion);
+        String comando = mensaje.getComando();
+
+        if (comando.equals("NOTIF_ADELANTADO")) {
+            String idSubasta = mensaje.getParametro(0);
+            String nuevoLider = mensaje.getParametro(1);
+            String nuevoPrecio = mensaje.getParametro(2);
+
+            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + " por " + nuevoLider
+                    + " con una puja de " + nuevoPrecio + "€");
+
+        } else if (comando.equals("NOTIF_GANADOR")) {
+            String idSubasta = mensaje.getParametro(0);
+            String tituloSubasta = mensaje.getParametro(1);
+            String precioFinal = mensaje.getParametro(2);
+
+            imprimirConsola("\n[NOTIFICACIÓN] Has ganado la subasta #" + idSubasta + " '" + tituloSubasta
+                    + "' con un precio final de " + precioFinal + "€");
+        }
+    }
+
+    private static void imprimirConsola(String mensaje) {
+        synchronized (consoleLock) {
+            System.out.println(mensaje);
+        }
+    }
+
+    private static String esperarRespuesta() {
+        try {
+            return colaRespuestas.take(); // Bloquea hasta que haya respuesta
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    }
+
     private static void cerrarConexion() {
         try {
             conexion = false;
-            if (hiloNotificaciones != null) {
-                hiloNotificaciones.interrupt();
+            if (hiloLector != null) {
+                hiloLector.interrupt();
             }
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (in != null)
+            }
+            if (in != null) {
                 in.close();
-            if (socket != null)
+            }
+            if (socket != null) {
                 socket.close();
-            scanner.close();
-            System.out.println("[CLIENT] Conexión cerrada.");
+            }
+            if (scanner != null) {
+                scanner.close();
+            }
+            imprimirConsola("[CLIENT] Conexión cerrada.");
         } catch (Exception e) {
             System.err.println("[CLIENT] Error al cerrar conexión: " + e.getMessage());
         }
     }
 
-    private static void iniciarHiloNotificaciones() {
-        hiloNotificaciones = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (conexion) {
-                        if (in.ready()) {
-                            String linea = in.readLine();
-                            if (linea == null) {
-                                break;
-                            }
-                            if (linea.startsWith("NOTIF_")) {
-                                procesarNotificacion(linea);
-                            }
-                            Thread.sleep(100);
-
-                        }
-                    }
-                } catch (IOException e) {
-                    if (conexion) {
-                        System.err.println("[NOTIF] Error en hilo de notificaciones: " + e.getMessage());
-                    }
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-
-            private void procesarNotificacion(String notificacion) {
-                String[] partes = notificacion.split(":");
-
-                if (partes[0].equals("NOTIF_ADELANTADO")) {
-                    String idSubasta = partes[1];
-                    String nuevoLider = partes[2];
-                    String nuevoPrecio = partes[3];
-
-                    System.out.println("\n[NOTIF] Has sido adelantado en la subasta "
-                            + idSubasta + " por " + nuevoLider + " con una puja de " + nuevoPrecio + "€");
-
-                } else if (partes[0].equals("NOTIF_GANADOR")) {
-                    String idSubasta = partes[1];
-                    String tituloSubasta = partes[2];
-                    String precioFinal = partes[3];
-
-                    System.out.println("\n[NOTIF] Has ganado la subasta '"
-                            + tituloSubasta + "' (ID " + idSubasta + ") con un precio final de "
-                            + precioFinal + "€");
-
-                }
-            }
-        });
-        hiloNotificaciones.setDaemon(true);
-        hiloNotificaciones.start();
-        System.out.println("[NOTIF] Sistema de notificaciones activado");
-
-    }
-
     private static boolean registro() {
-        System.out.println("\n=== REGISTRO DE NUEVO USUARIO ===");
+        imprimirConsola("\n=== REGISTRO DE NUEVO USUARIO ===");
         System.out.print("Elige un nombre de usuario: ");
         String usuario = scanner.nextLine();
 
         if (usuario.trim().isEmpty()) {
-            System.out.println("[CLIENT] El nombre de usuario no puede estar vacío.");
+            imprimirConsola("[CLIENT_ERROR] El nombre de usuario no puede estar vacío.");
             return false;
         }
 
@@ -165,71 +208,63 @@ public class ClienteSubastas {
         String passwordConfirm = scanner.nextLine();
 
         if (!password.equals(passwordConfirm)) {
-            System.out.println("[CLIENT] Las contraseñas no coinciden");
+            imprimirConsola("[CLIENT_ERROR] Las contraseñas no coinciden");
             return false;
         }
 
         out.println("REGISTER:" + usuario + ":" + password);
 
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("REGISTER_OK")) {
-                nombreUsuario = usuario;
-                System.out.println("Registrado correctamente! Bienvenido " + usuario);
-                return true;
-            } else if (respuesta.startsWith("REGISTER_ERROR:")) {
-                String error = respuesta.substring(15);
-                System.out.println(error);
-                return false;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.startsWith("REGISTER_OK")) {
+            nombreUsuario = usuario;
+            imprimirConsola("[REGISTER_OK] Registrado correctamente! Bienvenido " + usuario);
+            return true;
+        } else if (respuesta != null && respuesta.startsWith("REGISTER_ERROR:")) {
+            String error = respuesta.substring(15);
+            imprimirConsola("[REGISTER_ERROR] " + error);
+            return false;
         }
 
         return false;
     }
 
     private static boolean login() {
-        System.out.println("Escribe tu nombre:");
+        imprimirConsola("\n=== INICIO DE SESIÓN ===");
+        System.out.print("Escribe tu nombre: ");
         nombreUsuario = scanner.nextLine();
-        System.out.println("Escribe la contraseña:");
+        System.out.print("Escribe la contraseña: ");
+        String password = scanner.nextLine();
 
-        out.println("LOGIN:" + nombreUsuario + ":" + scanner.nextLine());
+        out.println("LOGIN:" + nombreUsuario + ":" + password);
 
-        String respuesta;
-        try {
-            respuesta = in.readLine();
-            if (respuesta.equals("LOGIN_OK")) {
-                System.out.println("ME HE LOGEADO BIENN");
-                return true;
-            } else if (respuesta.startsWith("LOGIN_ERROR:")) {
-                String error = respuesta.substring(12);
-                System.out.println("Error: " + error);
-                return false;
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.equals("LOGIN_OK")) {
+            imprimirConsola("[LOGIN_OK] Sesión iniciada correctamente");
+            return true;
+        } else if (respuesta != null && respuesta.startsWith("LOGIN_ERROR:")) {
+            String error = respuesta.substring(12);
+            imprimirConsola("[LOGIN_ERROR] " + error);
             return false;
         }
-        return false;
 
+        return false;
     }
 
     private static void mostrarMenu() {
-        System.out.println("\n=== MENÚ PRINCIPAL ===");
-        System.out.println("1. Listar subastas activas");
-        System.out.println("2. Ver información de subasta");
-        System.out.println("3. Realizar puja");
-        System.out.println("4. Consultar saldo");
-        System.out.println("5. Ver historial de pujas");
-        System.out.println("6. Agregar una subasta");
-        System.out.println("7. Ingresar dinero");
-        System.out.println("8. Salir");
+        imprimirConsola("\n=== MENÚ PRINCIPAL ===");
+        imprimirConsola("1. Listar subastas activas");
+        imprimirConsola("2. Ver información de subasta");
+        imprimirConsola("3. Realizar puja");
+        imprimirConsola("4. Consultar saldo");
+        imprimirConsola("5. Ver historial de pujas");
+        imprimirConsola("6. Agregar una subasta");
+        imprimirConsola("7. Ingresar dinero");
+        imprimirConsola("8. Salir");
 
         System.out.print("Opción: ");
 
-        int opcion = scanner.nextInt();
+        int opcion = leerEntero();
+
         switch (opcion) {
             case 1:
                 listarSubastas();
@@ -255,161 +290,186 @@ public class ClienteSubastas {
             case 8:
                 salir();
                 break;
-            default: 
-                System.out.println("Opción inválida. Inténtalo de nuevo.");
-                break;
+            default:
+                imprimirConsola("[CLIENT_ERROR] Opción inválida");
         }
     }
 
     private static void ingresarDinero() {
-        System.out.println("¿Cuánto dinero quieres ingresar?");
-        double cantidad = scanner.nextDouble();
+        System.out.print("¿Cuánto dinero quieres ingresar? ");
+        double cantidad = leerDouble();
+    
         out.println("DEP:" + cantidad);
 
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("DEP_OK:")) {
-                String nuevoSaldo = respuesta.substring(7);
-                System.out.println("[CLIENT] Depósito realizado. Nuevo saldo: " + nuevoSaldo + "€");
-            } else if (respuesta.startsWith("DEP_ERROR:")) {
-                String error = respuesta.substring(10);
-                System.out.println("[CLIENT] Error al ingresar dinero: " + error);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.startsWith("DEP_OK:")) {
+            String nuevoSaldo = respuesta.substring(7);
+            imprimirConsola("[DEP_OK] Depósito realizado. Nuevo saldo: " + nuevoSaldo + "€");
+        } else if (respuesta != null && respuesta.startsWith("DEP_ERROR:")) {
+            String error = respuesta.substring(10);
+            imprimirConsola("[DEP_ERROR] " + error);
         }
     }
 
     private static void agregarSubasta() {
-        System.out.println("Introduce el título de la subasta:");
-        scanner.nextLine(); // Consumir el salto que se queda
+        imprimirConsola("\n=== AGREGAR NUEVA SUBASTA ===");
+        System.out.print("Introduce el título de la subasta: ");
         String titulo = scanner.nextLine();
 
-        System.out.println("Introduce el precio inicial:");
-        double precioInicial = scanner.nextDouble();
-        System.out.println("Introduce la duración en segundos:");
-        int duracion = scanner.nextInt();
+        System.out.print("Introduce el precio inicial: ");
+        double precioInicial = leerDouble();
+    
+        System.out.print("Introduce la duración en segundos: ");
+        int duracion = leerEntero();
+
 
         out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion);
 
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("ADD_OK")) {
-                System.out.println("[CLIENT] Subasta agregada correctamente.");
-            } else if (respuesta.startsWith("ADD_ERROR:")) {
-                String error = respuesta.substring(18);
-                System.out.println("[CLIENT] Error al agregar subasta: " + error);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.startsWith("ADD_OK")) {
+            imprimirConsola("[ADD_OK] Subasta agregada correctamente");
+        } else if (respuesta != null && respuesta.startsWith("ADD_ERROR:")) {
+            String error = respuesta.substring(10);
+            imprimirConsola("[ADD_ERROR] " + error);
         }
     }
 
     private static void listarSubastas() {
-        System.out.println("He solicitado la lista de subastas al servidor");
         out.println("LIST");
 
-        try {
-            String respuesta = in.readLine();
-
-            if (respuesta.equals("LISTA_VACIA")) {
-                System.out.println("No hay subastas disponibles");
-                return;
-            } else if (respuesta.startsWith("LISTA:")) {
-                String listaSubastas = respuesta.substring(6); // Quitar "LISTA:"
-                String[] subastas = listaSubastas.split(";");
-
-                System.out.println("Subastas disponibles:");
-                for (String subasta : subastas) {
-
-                    String[] partes = subasta.split("\\|"); // | escapo
-
-                    String id = partes[0];
-                    String titulo = partes[1];
-                    String precioActual = partes[2];
-                    String pujador = partes[3];
-                    String tiempoRestante = partes[4];
-
-                    System.out.println(id + ". " + titulo);
-                    System.out.println("   Precio actual: " + precioActual + "€");
-                    System.out.println("   Pujador líder: " + pujador);
-                    System.out.println("   Tiempo restante: " + tiempoRestante + " segundos");
-                }
-            }
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta == null) {
+            return;
         }
 
+        if (respuesta.equals("LISTA_VACIA")) {
+            imprimirConsola("[LIST_EMPTY] No hay subastas disponibles");
+            return;
+        } else if (respuesta.startsWith("LISTA:")) {
+            String listaSubastas = respuesta.substring(6); // Quitar "LISTA:"
+            String[] subastas = listaSubastas.split(";");
+
+            imprimirConsola("[LIST_OK] Subastas activas:");
+
+            for (String subasta : subastas) {
+                String[] partes = subasta.split("\\|");
+                String id = partes[0];
+                String titulo = partes[1];
+                String precioActual = partes[2];
+                String pujador = partes[3];
+                String tiempoRestante = partes[4];
+
+                imprimirConsola("\n#" + id + " " + titulo);
+                imprimirConsola("  Precio actual: " + precioActual + "€");
+                imprimirConsola("  Pujador líder: " + pujador);
+                imprimirConsola("  Tiempo restante: " + tiempoRestante + "s");
+            }
+            imprimirConsola("");
+        }
     }
 
     private static void infoSubasta() {
-        System.out.println("Elige una subasta entre las disponibles:");
-        int idSubasta = scanner.nextInt();
+        System.out.print("Introduce el ID de la subasta: ");
+        int idSubasta = leerEntero();
+
         out.println("INFO:" + idSubasta);
-        try {
-            System.out.println(in.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        String respuesta = esperarRespuesta();
+
+        if (respuesta != null && respuesta.startsWith("INFO_OK:")) {
+            respuesta = respuesta.substring(8);
+            String[] partes = respuesta.split("\\|");
+
+            String id = partes[0];
+            String titulo = partes[1];
+            String precioActual = partes[2];
+            String pujador = partes[3];
+            String tiempoRestante = partes[4];
+
+            imprimirConsola("[INFO_OK] #" + id + " " + titulo);
+            imprimirConsola("  Precio actual: " + precioActual + "€");
+            imprimirConsola("  Pujador líder: " + pujador);
+            imprimirConsola("  Tiempo restante: " + tiempoRestante + "s");
+
+        } else if (respuesta != null && respuesta.startsWith("INFO_ERROR:")) {
+            String error = respuesta.substring(12);
+            imprimirConsola("[INFO_ERROR] " + error);
         }
     }
 
     private static void pujar() {
-        System.out.println("Introduce el numero de la subasta en la que quieres pujar:");
-        int idSubasta = scanner.nextInt();
-        System.out.println("Introduce la cantidad que quieras pujar:");
-        double cantidad = scanner.nextDouble();
+        System.out.print("Introduce el ID de la subasta: ");
+        int idSubasta = leerEntero();
+
+        System.out.print("Introduce la cantidad a pujar: ");
+        double cantidad = leerDouble();
+
         out.println("BID:" + idSubasta + ":" + cantidad);
 
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("BID_OK")) {
-                System.out.println("La puja aceptada");
-
-            } else if (respuesta.startsWith("BID_ERROR")) {
-                String resto = respuesta.substring(10);
-                System.out.println("La puja no fue aceptada: " + resto);
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void consultarHistorial() {
-        out.println("CONSULT:history");
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("HISTORIAL:")) {
-                String historial = respuesta.substring(10);
-                historial = historial.replace("{{NL}}", "\n");
-                System.out.println(historial);
-            } else {
-                System.out.println("Error al consultar historial");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.startsWith("BID_OK")) {
+            imprimirConsola("[BID_OK] Puja aceptada");
+        } else if (respuesta != null && respuesta.startsWith("BID_ERROR")) {
+            String error = respuesta.substring(10);
+            imprimirConsola("[BID_ERROR] Puja rechazada: " + error);
         }
     }
 
     private static void consultarSaldo() {
         out.println("CONSULT:credit");
-        try {
-            String respuesta = in.readLine();
-            if (respuesta.startsWith("SALDO:")) {
-                String mensaje = respuesta.substring(6);
-                System.out.println("\n " + mensaje);
-            } else {
-                System.out.println("Error al consultar saldo");
+
+        String respuesta = esperarRespuesta();
+        if (respuesta != null && respuesta.startsWith("SALDO:")) {
+            String datos = respuesta.substring(6);
+            String[] partes = datos.split(":");
+
+            String saldoTotal = partes[0];
+            String saldoBloqueado = partes[1];
+            String saldoDisponible = partes[2];
+
+            imprimirConsola("\n[SALDO] Tu información financiera:");
+            imprimirConsola("  Saldo total:      " + saldoTotal + "€");
+            imprimirConsola("  Bloqueado:        " + saldoBloqueado + "€");
+            imprimirConsola("  Disponible:       " + saldoDisponible + "€");
+
+        } else {
+            imprimirConsola("[SALDO_ERROR] No se pudo consultar el saldo");
+        }
+    }
+
+    private static void consultarHistorial() {
+        out.println("CONSULT:history");
+
+        String respuesta = esperarRespuesta();
+
+        if (respuesta != null && respuesta.equals("HISTORIAL_VACIO")) {
+            imprimirConsola("\n[HISTORIAL] No has realizado ninguna puja todavía");
+
+        } else if (respuesta != null && respuesta.startsWith("HISTORIAL:")) {
+            String datos = respuesta.substring(10);
+            String[] pujas = datos.split(";");
+
+            imprimirConsola("\n[HISTORIAL] Tus pujas:");
+
+            for (String puja : pujas) {
+                String[] partes = puja.split("\\|");
+                String idSubasta = partes[0];
+                String cantidad = partes[1];
+                String fecha = partes[2];
+
+                imprimirConsola("  Subasta #" + idSubasta + " | " + cantidad + "€ | " + fecha);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            imprimirConsola("  Total de pujas: " + pujas.length);
+
+        } else {
+            imprimirConsola("[HISTORIAL_ERROR] No se pudo consultar el historial");
         }
     }
 
     private static void salir() {
         out.println("SALIR");
         conexion = false;
+        imprimirConsola("\n[SALIR] Cerrando sesión. Hasta pronto");
     }
 }
