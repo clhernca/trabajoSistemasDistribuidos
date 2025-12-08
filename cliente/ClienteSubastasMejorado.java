@@ -1,4 +1,3 @@
-
 package cliente;
 
 import compartido.Mensaje;
@@ -38,7 +37,6 @@ public class ClienteSubastasMejorado {
 
             imprimirConsola("[CLIENT] Conectado al server en " + HOST + ":" + PUERTO);
 
-            
             iniciarHiloLector();
 
             boolean autenticado = false;
@@ -49,8 +47,7 @@ public class ClienteSubastasMejorado {
                 imprimirConsola("3. Salir");
                 System.out.print("Opción: ");
 
-                int opcion = scanner.nextInt();
-                scanner.nextLine();
+                int opcion = leerEntero();
 
                 switch (opcion) {
                     case 1:
@@ -81,9 +78,38 @@ public class ClienteSubastasMejorado {
         }
     }
 
+    //Para leer las opciones y tal bien
+
+    private static int leerEntero() {
+        while (true) {
+            try {
+                int valor = scanner.nextInt();
+                scanner.nextLine(); // Consumir salto de línea
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                imprimirConsola("[ERROR] Debes introducir un número entero válido. Inténtalo de nuevo:");
+                scanner.nextLine(); // Limpiar buffer
+            }
+        }
+    }
+
+    
+    private static double leerDouble() {
+        while (true) {
+            try {
+                double valor = scanner.nextDouble();
+                scanner.nextLine(); // Consumir salto de línea
+                return valor;
+            } catch (java.util.InputMismatchException e) {
+                imprimirConsola("[ERROR] Debes introducir un número válido. Inténtalo de nuevo:");
+                scanner.nextLine(); // Limpiar buffer
+            }
+        }
+    }
+
     /**
-     * Hilo que lee TODAS las respuestas del servidor
-     * Distingue entre notificaciones y respuestas normales
+     * Hilo que lee TODAS las respuestas del servidor Distingue entre
+     * notificaciones y respuestas normales
      */
     private static void iniciarHiloLector() {
         hiloLector = new Thread(() -> {
@@ -111,7 +137,7 @@ public class ClienteSubastasMejorado {
      * Procesa notificaciones del servidor y las muestra inmediatamente
      */
     private static void procesarNotificacion(String notificacion) {
-                                                                    
+
         Mensaje mensaje = Mensaje.parsear(notificacion);
         String comando = mensaje.getComando();
 
@@ -120,8 +146,8 @@ public class ClienteSubastasMejorado {
             String nuevoLider = mensaje.getParametro(1);
             String nuevoPrecio = mensaje.getParametro(2);
 
-            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider +
-                    " con una puja de " + nuevoPrecio + "€");
+            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider
+                    + " con una puja de " + nuevoPrecio + "€");
 
         } else if (comando.equals("NOTIF_GANADOR")) {
             String idSubasta = mensaje.getParametro(0);
@@ -134,8 +160,8 @@ public class ClienteSubastasMejorado {
     }
 
     /**
-     * Método sincronizado para imprimir en consola
-     * Evita que se mezclen mensajes de diferentes hilos
+     * Método sincronizado para imprimir en consola Evita que se mezclen
+     * mensajes de diferentes hilos
      */
     private static void imprimirConsola(String mensaje) {
         synchronized (consoleLock) {
@@ -144,8 +170,8 @@ public class ClienteSubastasMejorado {
     }
 
     /**
-     * Espera y obtiene la siguiente respuesta del servidor
-     * Bloquea hasta que haya una respuesta disponible
+     * Espera y obtiene la siguiente respuesta del servidor Bloquea hasta que
+     * haya una respuesta disponible
      */
     private static String esperarRespuesta() {
         try {
@@ -162,14 +188,18 @@ public class ClienteSubastasMejorado {
             if (hiloLector != null) {
                 hiloLector.interrupt();
             }
-            if (out != null)
+            if (out != null) {
                 out.close();
-            if (in != null)
+            }
+            if (in != null) {
                 in.close();
-            if (socket != null)
+            }
+            if (socket != null) {
                 socket.close();
-            if (scanner != null)
+            }
+            if (scanner != null) {
                 scanner.close();
+            }
             imprimirConsola("[CLIENT] Conexión cerrada.");
         } catch (Exception e) {
             System.err.println("[CLIENT] Error al cerrar conexión: " + e.getMessage());
@@ -248,8 +278,7 @@ public class ClienteSubastasMejorado {
 
         System.out.print("Opción: ");
 
-        int opcion = scanner.nextInt();
-        scanner.nextLine();
+        int opcion = leerEntero();
 
         switch (opcion) {
             case 1:
@@ -283,9 +312,8 @@ public class ClienteSubastasMejorado {
 
     private static void ingresarDinero() {
         System.out.print("¿Cuánto dinero quieres ingresar? ");
-        double cantidad = scanner.nextDouble();
-        scanner.nextLine();
-
+        double cantidad = leerDouble();
+    
         out.println("DEP:" + cantidad);
 
         String respuesta = esperarRespuesta();
@@ -304,11 +332,11 @@ public class ClienteSubastasMejorado {
         String titulo = scanner.nextLine();
 
         System.out.print("Introduce el precio inicial: ");
-        double precioInicial = scanner.nextDouble();
-
+        double precioInicial = leerDouble();
+    
         System.out.print("Introduce la duración en segundos: ");
-        int duracion = scanner.nextInt();
-        scanner.nextLine();
+        int duracion = leerEntero();
+
 
         out.println("ADD:" + titulo + ":" + precioInicial + ":" + duracion);
 
@@ -325,8 +353,9 @@ public class ClienteSubastasMejorado {
         out.println("LIST");
 
         String respuesta = esperarRespuesta();
-        if (respuesta == null)
+        if (respuesta == null) {
             return;
+        }
 
         if (respuesta.equals("LISTA_VACIA")) {
             imprimirConsola("[LIST_EMPTY] No hay subastas disponibles");
@@ -356,13 +385,12 @@ public class ClienteSubastasMejorado {
 
     private static void infoSubasta() {
         System.out.print("Introduce el ID de la subasta: ");
-        int idSubasta = scanner.nextInt();
-        scanner.nextLine();
+        int idSubasta = leerEntero();
 
         out.println("INFO:" + idSubasta);
 
         String respuesta = esperarRespuesta();
-                                               
+
         if (respuesta != null && respuesta.startsWith("INFO_OK:")) {
             respuesta = respuesta.substring(8);
             String[] partes = respuesta.split("\\|");
@@ -386,11 +414,10 @@ public class ClienteSubastasMejorado {
 
     private static void pujar() {
         System.out.print("Introduce el ID de la subasta: ");
-        int idSubasta = scanner.nextInt();
+        int idSubasta = leerEntero();
 
         System.out.print("Introduce la cantidad a pujar: ");
-        double cantidad = scanner.nextDouble();
-        scanner.nextLine();
+        double cantidad = leerDouble();
 
         out.println("BID:" + idSubasta + ":" + cantidad);
 
