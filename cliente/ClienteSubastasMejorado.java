@@ -146,7 +146,7 @@ public class ClienteSubastasMejorado {
             String nuevoLider = mensaje.getParametro(1);
             String nuevoPrecio = mensaje.getParametro(2);
 
-            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + "por " + nuevoLider
+            imprimirConsola("\n[NOTIFICACIÓN] Has sido adelantado en la subasta #" + idSubasta + " por " + nuevoLider
                     + " con una puja de " + nuevoPrecio + "€");
 
         } else if (comando.equals("NOTIF_GANADOR")) {
